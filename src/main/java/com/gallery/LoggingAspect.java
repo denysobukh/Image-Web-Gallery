@@ -4,7 +4,6 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,7 @@ public class LoggingAspect {
     @Autowired
     private Logger logger;
 
-    @Before("execution(* com.dennisobukhov.gallery..*(..))")
+    @Before("execution(* com.gallery..*(..))")
     private void logExecution(JoinPoint joinPoint) {
         //logger.debug(joinPoint.toShortString());
         //!FIXME

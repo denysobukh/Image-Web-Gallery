@@ -1,5 +1,10 @@
 package com.gallery.controller;
 
+import com.gallery.GalleryApplicationException;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 /**
  * AdminController
  * <p>
@@ -7,5 +12,15 @@ package com.gallery.controller;
  *
  * @author Dennis Obukhov
  */
+
+@Controller
 public class AdminController {
+
+    @RequestMapping(value = "/admin")
+    public String admin(Model model) throws GalleryApplicationException {
+        throw new GalleryApplicationException("test");
+        //return "index";
+    }
+
+
 }

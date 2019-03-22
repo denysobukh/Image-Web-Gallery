@@ -1,4 +1,4 @@
-package com.gallery.model;
+package com.gallery.model.directory;
 
 import java.nio.file.Path;
 import java.util.List;

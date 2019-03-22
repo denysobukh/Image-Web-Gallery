@@ -1,5 +1,6 @@
-package com.gallery.model;
+package com.gallery.model.directory;
 
+import com.gallery.model.ImageExtension;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -134,6 +135,6 @@ public class DirectoryWalker implements DirectoryWalkerI {
 
     @Override
     public String toString() {
-        return this.getClass().getName() + "[root = " + rootDir + "]";
+        return this.getClass().getName() + "(" + rootDir + ")";
     }
 }

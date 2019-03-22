@@ -1,4 +1,4 @@
-package com.gallery.config;
+package com.gallery.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

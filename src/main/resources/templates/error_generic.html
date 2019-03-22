@@ -12,7 +12,9 @@
 </head>
 <body>
 <div class="container">
-    <h3 th:text="'An error has occurred while processing your request:\r\n' + ${error}"></h3>
+    <h3>An error has occurred while processing your request:</h3>
+    <h3 th:text="${error}"></h3>
+    <hr/>
 </div>
 
 <!-- Optional JavaScript -->

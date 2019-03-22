@@ -31,6 +31,7 @@ HELP.md
 # mvn
 mvnw
 mvnw.cmd
+/.mvn/
 
 #application specific
 application.properties

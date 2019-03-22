@@ -1,10 +1,8 @@
-package com.gallery.model;
+package com.gallery;
 
-import com.gallery.GalleryApplication;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,11 +13,10 @@ import org.springframework.stereotype.Component;
  * @author Dennis Obukhov
  */
 @Component
-public class GalleryApplicationListener implements ApplicationListener<ApplicationContextInitializedEvent> {
-    @Override
-    public void onApplicationEvent(ApplicationContextInitializedEvent event) {
-        LoggerFactory.getLogger(GalleryApplication.class).debug("ApplicationStartedEvent: " + event);
-        System.out.println("FFF");
-        throw new NullPointerException();
+public class GalleryApplicationListener {
+
+    @EventListener
+    public void onApplicationEvent(ApplicationStartedEvent event) {
+        LoggerFactory.getLogger(GalleryApplication.class).debug("Application Started Event");
     }
 }

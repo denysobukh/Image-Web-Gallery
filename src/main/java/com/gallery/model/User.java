@@ -1,4 +1,4 @@
-package com.gallery;
+package com.gallery.model;
 
 
 public class User {
