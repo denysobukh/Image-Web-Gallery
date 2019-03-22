@@ -1,8 +1,7 @@
 package com.gallery.controller;
 
 import com.gallery.ApplicationException;
-import com.gallery.model.DirectoryWalkerI;
-import com.gallery.model.Gallery;
+import com.gallery.model.directory.DirectoryWalkerI;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,9 +20,6 @@ public class DefaultController {
 
     @Autowired
     private Logger logger;
-
-    @Autowired
-    private Gallery gallery;
 
     @Autowired
     private DirectoryWalkerI directoryWalker;

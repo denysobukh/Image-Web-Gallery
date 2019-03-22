@@ -7,6 +7,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -46,6 +47,11 @@ public class DirectoryWalker implements DirectoryWalkerI {
         if (rootDir == null || !Files.isDirectory(rootDir)) throw new DirectoryWalkerException("Is not a directory",
                 rootDir);
         currentDir = rootDir;
+
+    }
+
+    @PostConstruct
+    private void postConstruct() {
         logger.debug("Constructed with root = " + rootDir.toAbsolutePath());
     }
 
@@ -82,7 +88,7 @@ public class DirectoryWalker implements DirectoryWalkerI {
                     .filter(f -> {
                         String name = f.getFileName().toString();
                         int i = name.lastIndexOf(".") + 1;
-                        return FileType.validate(name.substring(i));
+                        return ImageExtension.test(name.substring(i));
                     })
                     .collect(Collectors.toCollection(ArrayList::new));
         } catch (IOException e) {

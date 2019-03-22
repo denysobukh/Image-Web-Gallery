@@ -8,18 +8,8 @@ import org.springframework.context.ApplicationListener;
 
 
 @SpringBootApplication
-public class Application {
-
+public class Gallery {
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
-
-
-	private class GalleryApplicationListener implements ApplicationListener<ApplicationStartedEvent> {
-
-		@Override
-		public void onApplicationEvent(ApplicationStartedEvent event) {
-			LoggerFactory.getLogger(Application.class).debug("ApplicationStartedEvent: " + event);
-		}
+		SpringApplication.run(Gallery.class, args);
 	}
 }

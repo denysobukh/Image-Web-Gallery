@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Scope;
 
 @Configuration
 @EnableAspectJAutoProxy
-public class ApplicationConfiguration {
+public class GalleryConfiguration {
 
-    @Bean
+    @Bean("Logger")
     @Scope("prototype")
     public Logger logger(InjectionPoint injectionPoint) {
         return LoggerFactory.getLogger(injectionPoint.getMember().getDeclaringClass());
