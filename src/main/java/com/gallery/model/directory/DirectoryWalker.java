@@ -37,6 +37,44 @@ public class DirectoryWalker implements DirectoryWalkerI {
     private Path previousDir;
     private Path currentDir;
 
+    @FunctionalInterface
+    interface RootDirTester {
+        boolean isRootDir(Path p);
+    }
+
+    @FunctionalInterface
+    interface CurrentDirTester {
+        boolean isCurrentDir(Path p);
+    }
+
+    @FunctionalInterface
+    interface WithinRootDirTester {
+        boolean isWithinRootDir(Path p);
+    }
+
+    /**
+     * Provides method to test paths to be used in lambdas below
+     */
+    public class PathTester implements RootDirTester, CurrentDirTester, WithinRootDirTester {
+        @Override
+        public boolean isRootDir(Path p) {
+            return p.compareTo(currentDir) != 0;
+        }
+
+        @Override
+        public boolean isCurrentDir(Path p) {
+            return p.compareTo(currentDir) != 0;
+        }
+
+        @Override
+        public boolean isWithinRootDir(Path p) {
+            p = rootDir.resolve(p).normalize();
+            return Files.isDirectory(p) && p.startsWith(rootDir);
+        }
+    }
+
+    private PathTester pathTester = new PathTester();
+
     /**
      * Constructs DirectoryWalker and sets root and current directory to specified path
      *
@@ -57,6 +95,13 @@ public class DirectoryWalker implements DirectoryWalkerI {
     }
 
     @Override
+    public Path getParent() {
+        return currentDir.compareTo(rootDir) == 0 ?
+                null :
+                rootDir.relativize(currentDir.getParent());
+    }
+
+    @Override
     public Path getCurrent() {
         return currentDir;
     }
@@ -66,9 +111,8 @@ public class DirectoryWalker implements DirectoryWalkerI {
         try {
             return Files.walk(currentDir, 1, FileVisitOption.FOLLOW_LINKS)
                     .filter(Files::isDirectory)
-                    .filter((p -> {
-                        return p.compareTo(currentDir) != 0;
-                    }))
+                    .filter(p -> p.compareTo(currentDir) != 0)
+                    .map(p -> rootDir.relativize(p.normalize()))
                     .collect(Collectors.toCollection(ArrayList::new));
         } catch (IOException e) {
             throw new DirectoryWalkerException(e);
@@ -91,6 +135,7 @@ public class DirectoryWalker implements DirectoryWalkerI {
                         int i = name.lastIndexOf(".") + 1;
                         return ImageExtension.test(name.substring(i));
                     })
+                    .map(p -> rootDir.relativize(p.normalize()))
                     .collect(Collectors.toCollection(ArrayList::new));
         } catch (IOException e) {
             throw new DirectoryWalkerException(e);
@@ -106,10 +151,10 @@ public class DirectoryWalker implements DirectoryWalkerI {
 
     @Override
     public void enter(Path path) throws DirectoryWalkerException {
-        Path walker = clone(path);
-        while ((walker != null) && (walker.compareTo(rootDir) != 0))
-            walker = walker.getParent();
-        if (walker == null) throw new DirectoryWalkerException("Given path is outside the root path", path);
+        path = rootDir.resolve(path).normalize();
+        logger.debug("Enter " + path);
+        if (!pathTester.isWithinRootDir(path))
+            throw new DirectoryWalkerException("The path is not a directory or outside the root", path);
         previousDir = currentDir;
         currentDir = clone(path);
     }

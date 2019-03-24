@@ -21,6 +21,13 @@ public interface DirectoryWalkerI {
     public Path getCurrent();
 
     /**
+     * Returns Path of parent directory of the current directory
+     * or null if current directory is root directory
+     * @return Path of parent directory of the current directory
+     */
+    public Path getParent();
+
+    /**
      * Returns the list of directories in the current folder or empty list
      *
      * @return the list of directories in the current folder or empty list

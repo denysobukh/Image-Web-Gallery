@@ -5,17 +5,30 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
 
+
     <!-- Bootstrap CSS -->
     <link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
           integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+    <style>
+        .thumbnails img {
+            height: 150px;
+            padding: 0rem;
+            margin: 0.3rem;
+            border: 1px solid #e8ecf0;
+        }
+        .dirtree ul {
+            padding-left: 1.2rem;
+        }
+    </style>
 
-    <title>Hello, world!</title>
+    <title>Image Gallery</title>
 </head>
 <body>
-<div class="container-fluid top">
+<div class="container-fluid top py-3">
     <div class="row">
-        <div class="col"><p th:text="'Hello, ' + ${name} + '!'"/></div>
-        <div class="col">
+        <div class="col-11 "><p class="text-right" th:text="'Hello, ' + ${name} + '!'"/></div>
+        <div class="col-1 text-right">
             <form method="post" th:action="@{/logout}">
                 <input type="submit" value="Log out"/>
             </form>
@@ -24,15 +37,23 @@
 </div>
 <div class="container-fluid middle">
     <div class="row">
-        <div class="col-sm"><p th:each="p : ${paths}"
-                               th:text="${p}">Paths listing should be right here</p></div>
-        <div class="col"><p th:each="i : ${images}"
-                            th:text="${i}">Images go here</p></div>
+        <div class="col-2 dirtree">
+            <h6>Folders</h6>
+            <ul>
+                <li th:each="p: ${paths}">
+                    <a th:href="@{'/browse?d=' + ${p.getUrl()}}" th:text="${p.getName()}">#</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-10 thumbnails">
+            <h6>Images</h6>
+            <img class="img-thumbnail" th:alt="${i}" th:each="i : ${images}" th:src="@{'/f/' + ${i}}"/>
+        </div>
     </div>
 
 </div>
-<div class="container-fluid bottom">
-    2019
+<div class="container-fluid bottom text-center py-3">
+    by Filesystem Directory-based Image Gallery
 </div>
 
 <!-- Optional JavaScript -->

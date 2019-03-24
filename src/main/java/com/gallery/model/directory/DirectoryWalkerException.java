@@ -24,11 +24,11 @@ public class DirectoryWalkerException extends GalleryApplicationException {
     }
 
     DirectoryWalkerException(String m, Path p) {
-        super(m + ":" + p);
+        super(m + " : " + p);
     }
 
     DirectoryWalkerException(String m, Path p, Exception e) {
-        super(m + ":" + p, e);
+        super(m + " : " + p, e);
     }
     DirectoryWalkerException(Path p, Exception e) {
         super(p.toString(), e);
