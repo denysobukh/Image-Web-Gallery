@@ -11,25 +11,37 @@
           integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" rel="stylesheet">
     <link href="/static/style.css" rel="stylesheet">
     <style>
+        * {
+            font-size: 0.85rem;
+        }
         .thumbnails img {
-            height: 150px;
+            height: 12rem;
             padding: 0rem;
-            margin: 0.3rem;
+            margin: 0rem 0.3rem 0.3rem 0rem ;
             border: 1px solid #e8ecf0;
         }
         .dirtree ul {
-            padding-left: 1.2rem;
+            padding-left: 0.1rem;
+            list-style-type: none;
+            margin: 0rem;
         }
-    </style>
+        div.dirtree  {
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 0.3rem;
+            padding: 0.4rem;
+            overflow-wrap: break-word;
+        }
 
+    </style>
     <title>Image Gallery</title>
 </head>
 <body>
 <div class="container-fluid top py-3">
     <div class="row">
-        <div class="col-11 "><p class="text-right" th:text="'Hello, ' + ${name} + '!'"/></div>
-        <div class="col-1 text-right">
+        <div class="col text-right">
             <form method="post" th:action="@{/logout}">
+                <label type="text" th:text="'Hello, ' + ${name} + '!'"/>
                 <input type="submit" value="Log out"/>
             </form>
         </div>
@@ -37,22 +49,22 @@
 </div>
 <div class="container-fluid middle">
     <div class="row">
-        <div class="col-2 dirtree">
-            <h6>Folders</h6>
-            <ul>
-                <li th:each="p: ${paths}">
-                    <a th:href="@{'/browse?d=' + ${p.getUrl()}}" th:text="${p.getName()}">#</a>
-                </li>
-            </ul>
+        <div class="col-2 px-2">
+            <div class="dirtree">
+                <ul>
+                    <li th:each="p: ${paths}">
+                        <a th:href="@{'/browse?d=' + ${p.getUrl()}}" th:text="${p.getName()}">#</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div class="col-10 thumbnails">
-            <h6>Images</h6>
+        <div class="col-10 thumbnails px-2">
             <img class="img-thumbnail" th:alt="${i}" th:each="i : ${images}" th:src="@{'/f/' + ${i}}"/>
         </div>
     </div>
 
 </div>
-<div class="container-fluid bottom text-center py-3">
+<div class="container-fluid bottom text-center py-5">
     by Filesystem Directory-based Image Gallery
 </div>
 

@@ -5,6 +5,7 @@ import com.gallery.model.MenuItem;
 import com.gallery.model.directory.DirectoryWalkerI;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,29 +33,42 @@ public class IndexController {
     @Autowired
     private DirectoryWalkerI directoryWalker;
 
+    @Autowired
+    @Qualifier("currentDir")
+    private Path currentDir;
+
+
+    //!FIXME session is not working
+
+
     @GetMapping(value = {"/browse", ""})
     public String dir(Model model, HttpServletRequest request, @RequestParam Optional<String> d) throws GalleryApplicationException {
-        String requestedDir = d.orElse(null);
-        if (requestedDir == null) {
-            directoryWalker.enter(directoryWalker.getRoot());
-        } else {
-            directoryWalker.enter(Paths.get(requestedDir));
-        }
+        Path requestedDir;
+        if (d.isPresent()) {
+            requestedDir = Paths.get(d.get());
+            if (!directoryWalker.isWithinRootDir(requestedDir)) throw new GalleryApplicationException("Wrong path");
+            currentDir = directoryWalker.getRoot().resolve(requestedDir).normalize();
+        } else
+            requestedDir = currentDir;
+
         logger.debug("requestedDir=" + requestedDir);
+        logger.trace("currentDir=" + currentDir);
+        logger.trace("root = " + directoryWalker);
 
         List<MenuItem> paths =
                 Stream.concat(
-                        Stream.of(directoryWalker.getParent())
+                        Stream.of(directoryWalker.getParent(currentDir))
                                 .filter(p -> p != null)
                                 .map(p -> new MenuItem("..", p.toString())),
-                        directoryWalker.listDirs().stream()
+                        directoryWalker.listDirs(currentDir).stream()
+                                .sorted()
                                 .map(p -> new MenuItem(p.getFileName().toString(), p.toString()))
                 ).collect(Collectors.toCollection(ArrayList::new));
 
         model.addAttribute("rootDir", directoryWalker.getRoot());
         model.addAttribute("paths", paths);
         model.addAttribute("name", request.getSession().getId());
-        model.addAttribute("images", directoryWalker.listFiles());
+        model.addAttribute("images", directoryWalker.listFiles(currentDir));
         return "index";
     }
 

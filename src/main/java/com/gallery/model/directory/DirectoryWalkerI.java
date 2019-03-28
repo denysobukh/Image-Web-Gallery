@@ -5,66 +5,50 @@ import java.util.List;
 
 /**
  * DirectoryWalkerI specifies the behavior of the directory tree walker
+ * Immutable
  *
  * 2019-03-21 16:17 [Thursday]
  *
  * @author Dennis Obukhov
  */
-public interface DirectoryWalkerI {
+public interface DirectoryWalkerI extends DirectoryWalkerFunctions.RootDirTester,
+        DirectoryWalkerFunctions.WithinRootDirTester {
 
     /**
-     * Returns the directory has been entered by the walker last time
-     * or the root folder if no enters has been made
+     * Returns Path of parent directory or null if the given directory is the Root directory
      *
-     * @return  java.nio.file.Path
+     * @param the given path
+     * @return Path of parent directory
+     * @throws DirectoryWalkerException if the given path is invalid or filesystem error occurred
      */
-    public Path getCurrent();
+    public Path getParent(Path path) throws DirectoryWalkerException;
 
     /**
-     * Returns Path of parent directory of the current directory
-     * or null if current directory is root directory
-     * @return Path of parent directory of the current directory
-     */
-    public Path getParent();
-
-    /**
-     * Returns the list of directories in the current folder or empty list
+     * Returns the list of directories at the given Path or an empty list
      *
-     * @return the list of directories in the current folder or empty list
-     * @throws DirectoryWalkerException in case of filesystem error
+     * @param the give path
+     * @return the list of directories in the given Path or an empty list
+     * @throws DirectoryWalkerException if the given path is invalid or filesystem error occurred
      */
-    public List<Path> listDirs() throws DirectoryWalkerException;
+    public List<Path> listDirs(Path path) throws DirectoryWalkerException;
 
     /**
-     *  Returns the list of files in the current folder of empty list
+     * Returns the list of files in the given directory of an empty list
      *
-     * @return the list of files in the current folder of empty list
-     * @throws DirectoryWalkerException in case of filesystem error
+     * @param the given path
+     * @return the list of files in the given Path of empty list
+     * @throws DirectoryWalkerException if the given path is invalid or filesystem error occurred
      */
-    public List<Path> listFiles() throws DirectoryWalkerException;
+    public List<Path> listFiles(Path path) throws DirectoryWalkerException;
 
     /**
-     *  Returns the list of files along with directories in the current folder of empty list
+     * Returns the list of files along with directories in the given path
      *
-     * @return the list of files along with directories in the current folder of empty list
-     * @throws DirectoryWalkerException in case of filesystem error
+     * @param the given path
+     * @return the list of files along with directories in the given path of empty list if
+     * @throws DirectoryWalkerException if the given path is invalid or filesystem error occurred
      */
-    public List<Path> listAll() throws DirectoryWalkerException;
-
-    /**
-     * Enters the specified directory which becomes current
-     *
-     * @param path is the directory to enter
-     * @throws DirectoryWalkerException if cannot enter the path provided
-     */
-    public void enter(Path path) throws DirectoryWalkerException;
-
-    /**
-     * Enters the parent directory of the current directory
-     *
-     * @throws DirectoryWalkerException if cannot enter parent directory or when in the root directory
-     */
-    public void back() throws DirectoryWalkerException;
+    public List<Path> listAll(Path path) throws DirectoryWalkerException;
 
     /**
      * Returns the root directory Path
@@ -74,11 +58,11 @@ public interface DirectoryWalkerI {
     public Path getRoot();
 
     /**
-     * Returns {@code true} if current directory is the root directory
+     * Returns {@code true} if the given directory is the root directory
      *
-     * @return {@code true} if current directory is the root directory
+     * @return {@code true} if the given directory is the root directory
      */
-    public boolean isRoot();
+    public boolean isRoot(Path path);
 
 
 }

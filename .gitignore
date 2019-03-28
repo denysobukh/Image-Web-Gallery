@@ -33,6 +33,8 @@ mvnw
 mvnw.cmd
 /.mvn/
 
+src/main/java/Sandbox.java
+
 #application specific
 application.properties
 application.log*
