@@ -45,8 +45,11 @@ public class IndexController {
 
         if (d.isPresent() && !d.get().equals("")) {
             Path requestedDir = Paths.get(d.get());
-            if (!directoryWalker.isWithinRootDir(requestedDir)) throw new GalleryApplicationException("Wrong path");
+            if (!directoryWalker.isWithinRootDir(requestedDir))
+                throw new GalleryApplicationException("Wrong path " + requestedDir);
             currentDir = rootDir.resolve(requestedDir).normalize();
+        } else if (d.isPresent() && d.get().equals("")) {
+            currentDir = rootDir;
         } else if (userPreferences.getCurrentDir() != null) {
             currentDir = userPreferences.getCurrentDir();
         }
@@ -54,7 +57,6 @@ public class IndexController {
         userPreferences.setCurrentDir(currentDir);
 
         logger.debug("currentDir = " + currentDir);
-        logger.debug("currentDir = " + Integer.toHexString(currentDir.hashCode()));
         logger.trace("root = " + directoryWalker.getRoot());
         logger.trace("parent = " + directoryWalker.getParent(currentDir));
 
@@ -62,7 +64,8 @@ public class IndexController {
                 Stream.concat(
                         Stream.of(directoryWalker.getParent(currentDir))
                                 .filter(p -> p != null)
-                                .map(p -> new MenuItem("..", p.getFileName().toString())),
+                                .map(p -> new MenuItem("..", p.toString())),
+
                         directoryWalker.listDirs(currentDir).stream()
                                 .sorted()
                                 .map(p -> new MenuItem(p.getFileName().toString(), p.toString()))
