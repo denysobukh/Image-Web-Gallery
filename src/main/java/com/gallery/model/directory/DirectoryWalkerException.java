@@ -1,6 +1,6 @@
 package com.gallery.model.directory;
 
-import com.gallery.GalleryApplicationException;
+import com.gallery.application.GalleryException;
 
 import java.nio.file.Path;
 
@@ -8,7 +8,7 @@ import java.nio.file.Path;
  * The Exception is thrown during file system access errors
  * and all DirectoryTreeWalker errors including internal
  */
-public class DirectoryWalkerException extends GalleryApplicationException {
+public class DirectoryWalkerException extends GalleryException {
 
     @Deprecated
     DirectoryWalkerException(Path p) {

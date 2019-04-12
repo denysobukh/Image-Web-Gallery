@@ -1,19 +1,20 @@
 package com.gallery.controller;
 
-import com.gallery.GalleryApplicationException;
+import com.gallery.application.GalleryException;
 import com.gallery.model.MenuItem;
-import com.gallery.model.UserPreferences;
-import com.gallery.model.directory.DirectoryWalkerI;
+import com.gallery.model.directory.DirectoryWalker;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -31,30 +32,40 @@ public class IndexController {
     private Logger logger;
 
     @Autowired
-    private DirectoryWalkerI directoryWalker;
+    private DirectoryWalker directoryWalker;
 
-    @Autowired
-    //session scope bean
-    private UserPreferences userPreferences;
+
+    @ModelAttribute
+    public void setPreferences(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        model.addAttribute("userName", session.getId());
+        if (session.getAttribute("currentDir") == null) {
+            session.setAttribute("currentDir", directoryWalker.getRoot());
+        }
+
+    }
 
     @GetMapping(value = {"/browse", ""})
-    public String dir(Model model, HttpServletRequest request, @RequestParam Optional<String> d) throws GalleryApplicationException {
-
+    public String dir(Model model, HttpServletRequest request, @RequestParam Optional<String> d) throws GalleryException {
+        HttpSession session = request.getSession();
         Path currentDir, rootDir;
         currentDir = rootDir = directoryWalker.getRoot();
+
+        if (session.getAttribute("currentDir") != null) {
+            currentDir = (Path) session.getAttribute("currentDir");
+        }
+
 
         if (d.isPresent() && !d.get().equals("")) {
             Path requestedDir = Paths.get(d.get());
             if (!directoryWalker.isWithinRootDir(requestedDir))
-                throw new GalleryApplicationException("Wrong path " + requestedDir);
+                throw new GalleryException("Wrong path " + requestedDir);
             currentDir = rootDir.resolve(requestedDir).normalize();
         } else if (d.isPresent() && d.get().equals("")) {
             currentDir = rootDir;
-        } else if (userPreferences.getCurrentDir() != null) {
-            currentDir = userPreferences.getCurrentDir();
         }
 
-        userPreferences.setCurrentDir(currentDir);
+        session.setAttribute("currentDir", currentDir);
 
         logger.debug("currentDir = " + currentDir);
         logger.trace("root = " + directoryWalker.getRoot());
@@ -71,9 +82,6 @@ public class IndexController {
                                 .map(p -> new MenuItem(p.getFileName().toString(), p.toString()))
                 ).collect(Collectors.toCollection(ArrayList::new));
 
-        model.addAttribute("userName", request.getSession().
-
-                getId());
         model.addAttribute("paths", paths);
         model.addAttribute("images", directoryWalker.listFiles(currentDir));
         return "index";

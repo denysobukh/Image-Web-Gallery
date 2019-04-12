@@ -1,4 +1,4 @@
-package com.gallery;
+package com.gallery.configuration;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 
+
+//!FIXME
+/*
 
 @Component
 @Aspect
@@ -30,3 +32,4 @@ public class LoggingAspect {
     }
 
 }
+*/

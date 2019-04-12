@@ -3,3 +3,48 @@
 @media (min-width: @screen-md-min) {
     font-size: 0.8rem;
 }
+
+
+* {
+    font-size: 0.85rem;
+}
+.thumbnails img {
+    height: 12rem;
+    padding: 0rem;
+    margin: 0rem 0.3rem 0.3rem 0rem ;
+    border: 1px solid #e8ecf0;
+}
+
+div.dirtree {
+    padding-left: 0.1rem;
+}
+
+
+
+div.dirtree  {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 0.3rem;
+    padding: 0.4rem;
+    overflow-wrap: break-word;
+}
+
+ul.unbullet, ul.buttons {
+    list-style-type: none;
+    margin: 0rem;
+}
+
+ul.buttons li {
+    display: inline;
+    margin: 0.6rem 0.6rem 0.6rem 0.6rem;
+}
+
+ul.buttons li a {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+
+    text-decoration: none;
+    color: initial;
+    padding: 0.2rem;
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/head"></div>
+</head>
+<body>
+<div th:replace="fragments/top"></div>
+<div class="container-fluid">
+</div>
+<div class="container-fluid middle">
+    <div class="row py-3">
+        <div class="col">
+            <ul class="buttons">
+                <li>
+                    <a th:href="@{/browse}">Browse</a>
+                </li>
+                <li>
+                    <a th:href="@{/admin/scan}">Scan</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row py-3" th:if="${files}">
+        <div class="col">
+            <ul>
+                <li th:class="${iterStat.odd}? 'odd'" th:each="file,iterStat : ${files}">
+                    <span th:text="${file}">File</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/bottom"></div>
+<div th:replace="fragments/scripts"></div>
+</body>
+</html>

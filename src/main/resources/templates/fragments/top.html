@@ -1,0 +1,14 @@
+<div class="container-fluid top py-3">
+    <div class="row">
+        <div class="col text-center">
+            <a th:href="@{/browse}">Home</a> |
+            <a th:href="@{/admin}">Admin</a>
+        </div>
+        <div class="col text-right">
+            <form method="post" th:action="@{/logout}">
+                <label type="text" th:text="'Welcome, ' + ${userName} + '!'"/>
+                <input type="submit" value="Log out"/>
+            </form>
+        </div>
+    </div>
+</div>

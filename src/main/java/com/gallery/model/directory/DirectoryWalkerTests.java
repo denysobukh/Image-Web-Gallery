@@ -4,12 +4,12 @@ import java.nio.file.Path;
 
 /**
  * Project: Gallery
- * Class: DirectoryWalkerFunctions
+ * Class: DirectoryWalkerTests
  * Date: 2019-03-26 20:11 [Tuesday]
  *
  * @author Dennis Obukhov
  */
-public interface DirectoryWalkerFunctions {
+public interface DirectoryWalkerTests {
     /**
      * Provides method to test paths to be used in lambdas below
      */
