@@ -1,7 +1,7 @@
 package com.gallery;
 
-import com.gallery.model.file.File;
-import com.gallery.model.file.FileRepository;
+import com.gallery.model.filesystembackend.ImageFile;
+import com.gallery.model.filesystembackend.FileRepository;
 import com.gallery.model.user.User;
 import com.gallery.model.user.UserPreferences;
 import com.gallery.model.user.UserPreferencesRepository;
@@ -70,7 +70,7 @@ public class GalleryApplication {
 
                 userRepository.save(user);
 
-                for (File f : fileRepository.findAll()) {
+                for (ImageFile f : fileRepository.findAll()) {
                     System.out.println(f);
                 }
 

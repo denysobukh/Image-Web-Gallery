@@ -29,7 +29,7 @@ public class UserPreferences {
     @GeneratedValue
     private int id;
 
-    @Type(type = "com.gallery.model.file.PathType")
+    @Type(type = "com.gallery.model.DBPathType")
     //@Columns(columns = {@Column(name = "current_dir")})
     private Path currentDir;
 

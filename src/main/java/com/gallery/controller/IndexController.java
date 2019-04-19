@@ -2,19 +2,22 @@ package com.gallery.controller;
 
 import com.gallery.application.GalleryException;
 import com.gallery.model.MenuItem;
-import com.gallery.model.directory.DirectoryWalker;
+import com.gallery.model.filesystembackend.DirectoryWalker;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -39,37 +42,44 @@ public class IndexController {
     public void setPreferences(Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
         model.addAttribute("userName", session.getId());
-        if (session.getAttribute("currentDir") == null) {
-            session.setAttribute("currentDir", directoryWalker.getRoot());
-        }
-
     }
 
     @GetMapping(value = {"/browse", ""})
-    public String dir(Model model, HttpServletRequest request, @RequestParam Optional<String> d) throws GalleryException {
-        HttpSession session = request.getSession();
+    public String browse(Model model, HttpServletRequest request,
+                         HttpServletResponse response,
+                         @RequestParam Optional<String> d,
+                         @CookieValue(value = "currentDir", defaultValue = "") String clientPath) throws GalleryException {
+
         Path currentDir, rootDir;
-        currentDir = rootDir = directoryWalker.getRoot();
-
-        if (session.getAttribute("currentDir") != null) {
-            currentDir = (Path) session.getAttribute("currentDir");
-        }
-
+        rootDir = directoryWalker.getRoot();
 
         if (d.isPresent() && !d.get().equals("")) {
             Path requestedDir = Paths.get(d.get());
-            if (!directoryWalker.isWithinRootDir(requestedDir))
+            if (!directoryWalker.withinRoot(requestedDir)) {
                 throw new GalleryException("Wrong path " + requestedDir);
+            }
             currentDir = rootDir.resolve(requestedDir).normalize();
-        } else if (d.isPresent() && d.get().equals("")) {
+        } else if (d.isPresent() && d.get().equals("") || clientPath.equals("")) {
             currentDir = rootDir;
+        } else {
+            try {
+                currentDir = rootDir.resolve(Paths.get(URLDecoder.decode(clientPath, "UTF-8")));
+            } catch (InvalidPathException | NullPointerException | UnsupportedEncodingException e) {
+                currentDir = rootDir;
+            }
         }
 
-        session.setAttribute("currentDir", currentDir);
-
         logger.debug("currentDir = " + currentDir);
-        logger.trace("root = " + directoryWalker.getRoot());
-        logger.trace("parent = " + directoryWalker.getParent(currentDir));
+        logger.trace("root = " + rootDir);
+
+        try {
+            Cookie cookie = new Cookie("currentDir", URLEncoder.encode(rootDir.relativize(currentDir).toString(),
+                    "UTF-8"));
+            cookie.setMaxAge(60 * 60 * 24 * 7);
+            response.addCookie(cookie);
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("set cookie", e);
+        }
 
         List<MenuItem> paths =
                 Stream.concat(

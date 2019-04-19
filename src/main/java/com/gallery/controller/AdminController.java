@@ -1,7 +1,8 @@
 package com.gallery.controller;
 
 import com.gallery.application.GalleryException;
-import com.gallery.model.directory.DirectoryScanner;
+import com.gallery.model.filesystembackend.ImageFile;
+import com.gallery.model.filesystembackend.DirectoryScanner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
  */
 
 @Controller
+@RequestMapping(value = "/admin")
 public class AdminController {
 
     @Autowired
@@ -33,17 +35,19 @@ public class AdminController {
         model.addAttribute("userName", request.getSession().getId());
     }
 
-    @RequestMapping(value = "/admin")
+    @RequestMapping(value = "")
     public String admin(Model model) throws GalleryException {
         return "admin";
     }
 
-    @RequestMapping(value = "/admin/scan")
+    @RequestMapping(value = "/scan")
     public String scan(Model model) throws GalleryException {
+
+        model.addAttribute("message", "Scan started");
 
         List<String> files = directoryScanner.scan()
                 .stream()
-                .map(f -> f.getPath())
+                .map(ImageFile::getSourcePath)
                 .collect(Collectors.toCollection(LinkedList::new));
 
         model.addAttribute("files", files);

@@ -1,4 +1,4 @@
-package com.gallery.model.file;
+package com.gallery.model;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
@@ -14,12 +14,12 @@ import java.sql.Types;
 import java.util.Objects;
 
 /**
- * PathType class
+ * DBPathType class
  *
  * @author Dennis Obukhov
  * @date 2019-04-12 14:34 [Friday]
  */
-public class PathType implements UserType {
+public class DBPathType implements UserType {
     @Override
     public int[] sqlTypes() {
         return new int[]{Types.VARCHAR};

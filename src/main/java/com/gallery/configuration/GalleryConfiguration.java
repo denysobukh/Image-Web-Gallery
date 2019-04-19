@@ -38,16 +38,6 @@ public class GalleryConfiguration implements WebMvcConfigurer {
         LoggerFactory.getLogger(this.getClass()).trace("rootDir bean factory method was called");
         return Paths.get(path);
     }
-/*
-
-    @Bean
-    UserPreferences buildUserPreferences(String path) {
-        UserPreferences userPreferences = new UserPreferences();
-        userPreferences.setCurrentDir(Paths.get(path));
-        return userPreferences;
-    }
-*/
-
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

@@ -33,7 +33,8 @@ mvnw
 mvnw.cmd
 /.mvn/
 
-src/main/java/Sandbox.java
+src/main/java/sandbox
+cache/*
 
 #application specific
 src/main/resources/application-dev.properties

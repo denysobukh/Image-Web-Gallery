@@ -1,4 +1,4 @@
-package com.gallery.model.directory;
+package com.gallery.model.filesystembackend;
 
 import com.gallery.application.GalleryException;
 
@@ -30,6 +30,7 @@ public class DirectoryWalkerException extends GalleryException {
     DirectoryWalkerException(String m, Path p, Exception e) {
         super(m + " : " + p, e);
     }
+
     DirectoryWalkerException(Path p, Exception e) {
         super(p.toString(), e);
     }
