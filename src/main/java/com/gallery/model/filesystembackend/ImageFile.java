@@ -1,8 +1,11 @@
 package com.gallery.model.filesystembackend;
 
 
+import org.hibernate.annotations.NaturalId;
+
 import javax.persistence.*;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -15,7 +18,7 @@ import java.util.Objects;
  * consist of:
  * source sourcePath to the image
  * sourcePath to the thumbnail
- * thumbnailState represents if the thumbnail exists, needed, not needed;
+ * state represents if the thumbnail exists, needed, not needed;
  *
  * @Non-thread safe
  */
@@ -23,23 +26,22 @@ import java.util.Objects;
 @Table(name = "files")
 public class ImageFile implements Serializable {
 
+    @Id
     @GeneratedValue
-    @Id
     private long id;
-    @Id
+    @NaturalId
     private String sourcePath;
     private String thumbnailPath;
-    private ThumbnailState thumbnailState;
+    private State state;
     /**
      * milliseconds since Epoch
      */
-    private Long lastModified;
+    private long lastModified;
     @Transient
     private int hashcode;
 
-    ImageFile() {
+    protected ImageFile() {
     }
-
 
     private ImageFile(String sourcePath, String thumbnailPath, long lastModified) {
         this.sourcePath = sourcePath;
@@ -48,35 +50,33 @@ public class ImageFile implements Serializable {
         updateState();
     }
 
-    public static ImageFile build(Path sourcePath) throws IllegalArgumentException {
+
+    public static ImageFile build(Path sourcePath) throws IOException {
         File f = sourcePath.toAbsolutePath().toFile();
-        if (!f.exists()) throw new IllegalArgumentException(sourcePath.toAbsolutePath() + " file does not exist");
+        if (!f.exists()) throw new IOException(sourcePath.toAbsolutePath() + " file does not exist");
         return new ImageFile(f.getAbsolutePath(), null, f.lastModified());
+    }
+
+
+    public long getId() {
+        return id;
     }
 
     public Long getLastModified() {
         return lastModified;
     }
 
-    public void setLastModified(Long lastModified) {
-        this.lastModified = lastModified;
-    }
-
-    public ThumbnailState getThumbnailState() {
-        return thumbnailState;
-    }
-
-    private void setThumbnailState(ThumbnailState thumbnailState) {
-        this.thumbnailState = thumbnailState;
+    public State getState() {
+        return state;
     }
 
     private void updateState() {
         if (sourcePath == null || thumbnailPath == null) {
-            thumbnailState = ThumbnailState.NEEDED;
+            state = State.NEW;
         } else if (Objects.equals(sourcePath, thumbnailPath)) {
-            thumbnailState = ThumbnailState.SAME_AS_SOURCE;
+            state = State.SOURCE_THUMBNAIL;
         } else {
-            thumbnailState = ThumbnailState.EXISTS;
+            state = State.HAS_THUMBNAIL;
         }
     }
 
@@ -104,15 +104,15 @@ public class ImageFile implements Serializable {
         if (this == obj) return true;
         if (!(obj instanceof ImageFile)) return false;
         final ImageFile o = (ImageFile) obj;
-        return Objects.equals(sourcePath, o.sourcePath) && Objects.equals(thumbnailPath, o.thumbnailPath);
+        return Objects.equals(sourcePath, o.sourcePath) && lastModified == o.lastModified;
     }
 
     @Override
     public int hashCode() {
         int result = hashcode;
         if (result == 0) {
-            result = (sourcePath == null ? 0 : sourcePath.hashCode());
-            result = 31 * result + (thumbnailPath == null ? 0 : thumbnailPath.hashCode());
+            result = 31 * (sourcePath == null ? 0 : sourcePath.hashCode());
+            result = 31 * result + Long.hashCode(lastModified);
             hashcode = result;
         }
         return result;
@@ -128,7 +128,7 @@ public class ImageFile implements Serializable {
         return String.format("ImageFile[%d; %s; %s; %s]", id, sourcePath, thumbnailPath, lastModifiedDateTime);
     }
 
-    enum ThumbnailState {
-        NEEDED, EXISTS, SAME_AS_SOURCE
+    enum State {
+        NEW, HAS_THUMBNAIL, SOURCE_THUMBNAIL
     }
 }

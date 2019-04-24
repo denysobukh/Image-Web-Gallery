@@ -1,8 +1,8 @@
 package com.gallery.controller;
 
 import com.gallery.application.GalleryException;
-import com.gallery.model.filesystembackend.ImageFile;
-import com.gallery.model.filesystembackend.DirectoryScanner;
+import com.gallery.model.filesystembackend.FileRepository;
+import com.gallery.model.filesystembackend.ImageProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * AdminController
@@ -27,12 +24,17 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     @Autowired
-    DirectoryScanner directoryScanner;
+    ImageProcessor imageProcessor;
+
+    @Autowired
+    FileRepository fileRepository;
 
 
     @ModelAttribute
     public void setPreferences(Model model, HttpServletRequest request) {
         model.addAttribute("userName", request.getSession().getId());
+        long size = fileRepository.count();
+        model.addAttribute("statusLine", size + " file(s)");
     }
 
     @RequestMapping(value = "")
@@ -42,15 +44,15 @@ public class AdminController {
 
     @RequestMapping(value = "/scan")
     public String scan(Model model) throws GalleryException {
+        ImageProcessor.Result scanResult = imageProcessor.scan();
+        model.addAttribute("message", scanResult);
+        return "admin";
+    }
 
-        model.addAttribute("message", "Scan started");
-
-        List<String> files = directoryScanner.scan()
-                .stream()
-                .map(ImageFile::getSourcePath)
-                .collect(Collectors.toCollection(LinkedList::new));
-
-        model.addAttribute("files", files);
+    @RequestMapping(value = "/cleanupdb")
+    public String cleanup(Model model) {
+        fileRepository.deleteAll();
+        model.addAttribute("message", "DB was cleaned up");
         return "admin";
     }
 }

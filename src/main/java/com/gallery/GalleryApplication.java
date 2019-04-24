@@ -53,10 +53,10 @@ public class GalleryApplication {
     @Lazy
     CommandLineRunner commandLineRunner() {
         return args -> {
-            userRepository.deleteAll();
-            fileRepository.deleteAll();
-
             if (console) {
+                fileRepository.deleteAll();
+                userRepository.deleteAll();
+
                 UserPreferences userPreferences = context.getBean(UserPreferences.class);
                 userPreferences.setCurrentDir(Paths.get("/tmp"));
 

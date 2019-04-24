@@ -45,6 +45,7 @@ public class DirectoryWalker {
 
     /**
      * Tests if the given path is within root
+     *
      * @param p given Path
      * @return {@true} if the given path is some child paths of the root
      */
@@ -103,14 +104,21 @@ public class DirectoryWalker {
      * @throws DirectoryWalkerException if the given path is invalid or filesystem error occurred
      */
     public List<Path> listFiles(Path path) throws DirectoryWalkerException {
-        return listFiles(path, 1, FileType.IMAGE);
+        return listFiles(path, 1, FileTypeFilter.IMAGE);
     }
 
+    /**
+     * Returns the list of files in the given directory and all of it subdirectories
+     *
+     * @param path the given path
+     * @return the list of files in the given Path of empty list
+     * @throws DirectoryWalkerException if the given path is invalid or filesystem error occurred
+     */
     public List<Path> listFilesDeep(Path path) throws DirectoryWalkerException {
-        return listFiles(path, Integer.MAX_VALUE, FileType.IMAGE);
+        return listFiles(path, Integer.MAX_VALUE, FileTypeFilter.IMAGE);
     }
 
-    private List<Path> listFiles(Path path, int maxDepth, FileTypeFilter filter) throws DirectoryWalkerException {
+    private List<Path> listFiles(Path path, int maxDepth, FileTypeFilterI filter) throws DirectoryWalkerException {
         if (!withinRoot(path))
             throw new DirectoryWalkerException("Is out of the root or invalid", path);
         try {

@@ -1,11 +1,5 @@
 package com.gallery.model.filesystembackend;
 
-/**
- * ImageScaler class
- *
- * @author Dennis Obukhov
- * @date 2019-04-14 12:08 [Sunday]
- */
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -17,11 +11,29 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-public class ImageScaler {
+/**
+ * ThumbnailImageFile class
+ *
+ * @author Dennis Obukhov
+ * @date 2019-04-14 12:08 [Sunday]
+ */
+public class ThumbnailImageFile {
 
+    private final ImageFile imageFile;
 
+    public ThumbnailImageFile(ImageFile imageFile) {
+        this.imageFile = imageFile;
+    }
 
-    public void scale(File inFile, File outFile, int boundWidth, int boundHeight, boolean expand) {
+    public ImageFile getImageFile() {
+        return imageFile;
+    }
+
+    public void resize() {
+
+    }
+
+    private void resize(File inFile, File outFile, int boundWidth, int boundHeight, boolean expand) {
         try {
             ImageIcon inImage = new ImageIcon(inFile.getAbsolutePath().toString());
             ImageIcon outputImage = null;
@@ -38,15 +50,7 @@ public class ImageScaler {
                     outputImage = new ImageIcon(inImage.getImage().getScaledInstance(-1, boundHeight, Image.SCALE_SMOOTH));
                 }
             } else {
-                FileChannel sourceChannel = new FileInputStream(inFile).getChannel();
-                FileChannel destChannel = new FileOutputStream(outFile).getChannel();
-                try {
-                    destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
-                } catch (IOException e) {
-                } finally {
-                    sourceChannel.close();
-                    destChannel.close();
-                }
+
             }
 
             BufferedImage bi = new BufferedImage(outputImage.getIconWidth(), outputImage.getIconHeight(), BufferedImage.TYPE_INT_RGB);
@@ -55,7 +59,7 @@ public class ImageScaler {
 
             ImageIO.write(bi, "jpg", outFile);
         } catch (IOException ioe) {
-            System.out.println("Error occured saving scaled image");
+            System.out.println("Error occurred saving scaled image");
         }
 
         /*
@@ -66,21 +70,23 @@ public class ImageScaler {
     int new_width = originalWidth;
     int new_height = originalHeight;
 
-    // first check if we need to scale width
+    // first check if we need to resize width
     if (originalWidth > boundWidth) {
-        //scale width to fit
+        //resize width to fit
         new_width = boundWidth;
-        //scale height to maintain aspect ratio
+        //resize height to maintain aspect ratio
         new_height = (new_width * originalHeight) / originalWidth;
     }
 
-    // then check if we need to scale even with the new height
+    // then check if we need to resize even with the new height
     if (new_height > bound_height) {
-        //scale height to fit instead
+        //resize height to fit instead
         new_height = bound_height;
-        //scale width to maintain aspect ratio
+        //resize width to maintain aspect ratio
         new_width = (new_height * originalWidth) / originalHeight;
     }
          */
     }
+
+
 }

@@ -17,7 +17,20 @@
                 <li>
                     <a th:href="@{/admin/scan}">Scan</a>
                 </li>
+                <li>
+                    <a th:href="@{/admin/cleanupdb}">Clean up</a>
+                </li>
             </ul>
+        </div>
+    </div>
+    <div class="row py-3" th:if="${statusLine}">
+        <div class="col">
+            <span th:text="${statusLine}"/>
+        </div>
+    </div>
+    <div class="row py-2">
+        <div class="col px-2">
+            <p th:if="${message}" th:text="${message}">message</p>
         </div>
     </div>
     <div class="row py-3" th:if="${files}">
