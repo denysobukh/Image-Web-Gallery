@@ -18,7 +18,6 @@ import java.util.Objects;
  * consist of:
  * source sourcePath to the image
  * sourcePath to the thumbnail
- * state represents if the thumbnail exists, needed, not needed;
  *
  * @Non-thread safe
  */
@@ -32,7 +31,6 @@ public class ImageFile implements Serializable {
     @NaturalId
     private String sourcePath;
     private String thumbnailPath;
-    private State state;
     /**
      * milliseconds since Epoch
      */
@@ -47,14 +45,13 @@ public class ImageFile implements Serializable {
         this.sourcePath = sourcePath;
         this.thumbnailPath = thumbnailPath;
         this.lastModified = lastModified;
-        updateState();
     }
 
 
     public static ImageFile build(Path sourcePath) throws IOException {
-        File f = sourcePath.toAbsolutePath().toFile();
-        if (!f.exists()) throw new IOException(sourcePath.toAbsolutePath() + " file does not exist");
-        return new ImageFile(f.getAbsolutePath(), null, f.lastModified());
+        File file = sourcePath.toAbsolutePath().toFile();
+        if (!file.exists()) throw new IOException(file.getAbsolutePath() + " file does not exist");
+        return new ImageFile(file.getAbsolutePath(), null, file.lastModified());
     }
 
 
@@ -66,27 +63,12 @@ public class ImageFile implements Serializable {
         return lastModified;
     }
 
-    public State getState() {
-        return state;
-    }
-
-    private void updateState() {
-        if (sourcePath == null || thumbnailPath == null) {
-            state = State.NEW;
-        } else if (Objects.equals(sourcePath, thumbnailPath)) {
-            state = State.SOURCE_THUMBNAIL;
-        } else {
-            state = State.HAS_THUMBNAIL;
-        }
-    }
-
     public String getSourcePath() {
         return sourcePath;
     }
 
     public void setSourcePath(String sourcePath) {
         this.sourcePath = sourcePath;
-        updateState();
     }
 
     public String getThumbnailPath() {
@@ -95,7 +77,6 @@ public class ImageFile implements Serializable {
 
     public void setThumbnailPath(String thumbnailPath) {
         this.thumbnailPath = thumbnailPath;
-        updateState();
     }
 
     @Override
@@ -126,9 +107,5 @@ public class ImageFile implements Serializable {
                 ZoneOffset.ofTotalSeconds(
                         Calendar.getInstance().getTimeZone().getRawOffset() / 1000));
         return String.format("ImageFile[%d; %s; %s; %s]", id, sourcePath, thumbnailPath, lastModifiedDateTime);
-    }
-
-    enum State {
-        NEW, HAS_THUMBNAIL, SOURCE_THUMBNAIL
     }
 }

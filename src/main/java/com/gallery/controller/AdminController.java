@@ -44,12 +44,12 @@ public class AdminController {
 
     @RequestMapping(value = "/scan")
     public String scan(Model model) throws GalleryException {
-        ImageProcessor.Result scanResult = imageProcessor.scan();
-        model.addAttribute("message", scanResult);
+        imageProcessor.updateRepository();
+        model.addAttribute("message", "Repository update stared");
         return "admin";
     }
 
-    @RequestMapping(value = "/cleanupdb")
+    @RequestMapping(value = "/cleanup")
     public String cleanup(Model model) {
         fileRepository.deleteAll();
         model.addAttribute("message", "DB was cleaned up");

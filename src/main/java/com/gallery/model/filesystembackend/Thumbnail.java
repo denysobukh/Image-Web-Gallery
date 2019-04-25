@@ -6,31 +6,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 
 /**
- * ThumbnailImageFile class
+ * Thumbnail class
  *
  * @author Dennis Obukhov
  * @date 2019-04-14 12:08 [Sunday]
  */
-public class ThumbnailImageFile {
+public class Thumbnail {
 
     private final ImageFile imageFile;
 
-    public ThumbnailImageFile(ImageFile imageFile) {
+    public Thumbnail(ImageFile imageFile) {
         this.imageFile = imageFile;
     }
 
     public ImageFile getImageFile() {
         return imageFile;
-    }
-
-    public void resize() {
-
     }
 
     private void resize(File inFile, File outFile, int boundWidth, int boundHeight, boolean expand) {
