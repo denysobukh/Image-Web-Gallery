@@ -1,12 +1,13 @@
 
 /* Medium devices (desktops, 992px and up) */
 @media (min-width: @screen-md-min) {
-    font-size: 0.8rem;
+    font-size: 1.2rem;
 }
 
 
 * {
-    font-size: 0.85rem;
+    /*font-size: 0.85rem;*/
+    font-size: 1.2rem;
 }
 .thumbnails img {
     height: 12rem;
@@ -48,3 +49,10 @@ ul.buttons li a {
     color: initial;
     padding: 0.2rem;
 }
+/*
+
+ul.buttons button {
+    border-radius: 0.4rem;
+    border: 1px solid black;
+    background: grey;
+}*/

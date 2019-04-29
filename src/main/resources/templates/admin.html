@@ -12,13 +12,13 @@
         <div class="col">
             <ul class="buttons">
                 <li>
-                    <a th:href="@{/browse}">Browse</a>
+                    <button type="button" class="btn btn-primary" th:href="@{/api/scan}">Scan</button>
                 </li>
                 <li>
-                    <a th:href="@{/admin/scan}">Scan</a>
+                    <button type="button" class="btn btn-primary" th:href="@{/api/cleanup}">Clean Up</button>
                 </li>
                 <li>
-                    <a th:href="@{/admin/cleanup}">Clean up</a>
+                    <button type="button" class="btn btn-primary" th:href="@{/dd}">Error</button>
                 </li>
             </ul>
         </div>
@@ -30,7 +30,12 @@
     </div>
     <div class="row py-2">
         <div class="col px-2">
-            <p th:if="${message}" th:text="${message}">message</p>
+            <div class="alert alert-primary" role="alert">
+                This is a primary alert—check it out!
+            </div>
+            <div class="alert alert-danger" role="alert">
+                This is a danger alert—check it out!
+            </div>
         </div>
     </div>
     <div class="row py-3" th:if="${files}">
@@ -44,5 +49,6 @@
 </div>
 <div th:replace="fragments/bottom"></div>
 <div th:replace="fragments/scripts"></div>
+<script src="/static/admin.js"></script>
 </body>
 </html>

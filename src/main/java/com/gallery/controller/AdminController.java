@@ -1,8 +1,8 @@
 package com.gallery.controller;
 
 import com.gallery.application.GalleryException;
-import com.gallery.model.filesystembackend.FileRepository;
-import com.gallery.model.filesystembackend.ImageProcessor;
+import com.gallery.model.file.FileRepository;
+import com.gallery.model.file.ThumbnailsManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 public class AdminController {
 
     @Autowired
-    ImageProcessor imageProcessor;
+    ThumbnailsManager thumbnailsManager;
 
     @Autowired
     FileRepository fileRepository;
@@ -39,20 +39,6 @@ public class AdminController {
 
     @RequestMapping(value = "")
     public String admin(Model model) throws GalleryException {
-        return "admin";
-    }
-
-    @RequestMapping(value = "/scan")
-    public String scan(Model model) throws GalleryException {
-        imageProcessor.updateRepository();
-        model.addAttribute("message", "Repository update stared");
-        return "admin";
-    }
-
-    @RequestMapping(value = "/cleanup")
-    public String cleanup(Model model) {
-        fileRepository.deleteAll();
-        model.addAttribute("message", "DB was cleaned up");
         return "admin";
     }
 }

@@ -1,9 +1,13 @@
 package com.gallery.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import com.gallery.application.GalleryException;
+import com.gallery.model.file.ThumbnailsManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -15,13 +19,23 @@ import java.util.Map;
 
 
 @RestController
+@RequestMapping(value = "/api")
 public class ApiController {
 
-    @GetMapping(value = "/api/scan-progress")
-    Map<String, Integer> scanProgress() {
-        HashMap<String, Integer> map = new HashMap<>();
-        map.put("progress", 99);
-        return map;
+    @Autowired
+    private ThumbnailsManager thumbnailsManager;
+
+    @RequestMapping(value = "/scan", produces = "application/json")
+    public Map<String, String> scan(Model model) throws GalleryException {
+        thumbnailsManager.updateRepository();
+        return Collections.singletonMap("message", "Repository update stared");
+
+    }
+
+    @RequestMapping(value = "/cleanup")
+    public Map<String, String> cleanup(Model model) {
+        thumbnailsManager.cleanUpRepository();
+        return Collections.singletonMap("message", "DB was cleaned up");
     }
 
 }

@@ -2,7 +2,7 @@ package com.gallery.controller;
 
 import com.gallery.application.GalleryException;
 import com.gallery.model.MenuItem;
-import com.gallery.model.filesystembackend.DirectoryWalker;
+import com.gallery.model.file.DirectoryManager;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,7 +35,7 @@ public class IndexController {
     private Logger logger;
 
     @Autowired
-    private DirectoryWalker directoryWalker;
+    private DirectoryManager directoryManager;
 
 
     @ModelAttribute
@@ -51,11 +51,11 @@ public class IndexController {
                          @CookieValue(value = "currentDir", defaultValue = "") String clientPath) throws GalleryException {
 
         Path currentDir, rootDir;
-        rootDir = directoryWalker.getRoot();
+        rootDir = directoryManager.getRoot();
 
         if (d.isPresent() && !d.get().equals("")) {
             Path requestedDir = Paths.get(d.get());
-            if (!directoryWalker.withinRoot(requestedDir)) {
+            if (!directoryManager.withinRoot(requestedDir)) {
                 throw new GalleryException("Wrong path " + requestedDir);
             }
             currentDir = rootDir.resolve(requestedDir).normalize();
@@ -83,17 +83,17 @@ public class IndexController {
 
         List<MenuItem> paths =
                 Stream.concat(
-                        Stream.of(directoryWalker.getParent(currentDir))
+                        Stream.of(directoryManager.getParent(currentDir))
                                 .filter(p -> p != null)
                                 .map(p -> new MenuItem("..", p.toString())),
 
-                        directoryWalker.listDirs(currentDir).stream()
+                        directoryManager.listDirs(currentDir).stream()
                                 .sorted()
                                 .map(p -> new MenuItem(p.getFileName().toString(), p.toString()))
                 ).collect(Collectors.toCollection(ArrayList::new));
 
         model.addAttribute("paths", paths);
-        model.addAttribute("images", directoryWalker.listFiles(currentDir));
+        model.addAttribute("images", directoryManager.listFiles(currentDir));
         return "index";
     }
 

@@ -1,19 +1,17 @@
-package com.gallery.model.filesystembackend;
+package com.gallery.model.file;
 
-import com.gallery.application.GalleryException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -21,7 +19,7 @@ import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 /**
- * ImageProcessor class
+ * ThumbnailsManager class
  * keeps track of filesystem changes
  * updates DB if needed
  * updates thumbnails if needed
@@ -30,7 +28,7 @@ import java.util.stream.StreamSupport;
  * @date 2019-04-12 18:57 [Friday]
  */
 @Component
-public class ImageProcessor {
+public class ThumbnailsManager {
     /**
      * number of CPUs to be used as maximum number of threads
      */
@@ -42,10 +40,10 @@ public class ImageProcessor {
     private static final int TIMEOUT_SECONDS = 15;
 
     private final ExecutorService executorService = Executors.newWorkStealingPool();
-    @PersistenceContext
-    EntityManager entityManager;
+    private Semaphore dbLock = new Semaphore(1);
+    private Semaphore diskLock = new Semaphore(1);
     @Autowired
-    private DirectoryWalker directoryWalker;
+    private DirectoryManager directoryManager;
     @Autowired
     private FileRepository filesDB;
     @Autowired
@@ -70,45 +68,63 @@ public class ImageProcessor {
      * Asynchronously compares files found on disk with DB records, deletes thumbnails of images
      * which were not found in DB
      * creates DB records for files which are found for the first time
-     * creates thumbnails for them
-     *
-     * @throws GalleryException
+     * creates their thumbnails if needed
      */
-    public synchronized void updateRepository() {
+    public void updateRepository() {
         logger.info("Repository update stared");
 
-        Future<Set<ImageFile>> futureDiskFiles = executorService.submit(this::getDiskAll);
-        Future<Set<ImageFile>> futureDbFiles = executorService.submit(this::getDbAll);
+        Future<Set<ImageFile>> futureDiskFiles = executorService.submit(() -> {
+            diskLock.acquire();
+            return getAllDisk();
+        });
+
+        Future<Set<ImageFile>> futureDbFiles = executorService.submit(() -> {
+            dbLock.acquire();
+            return getAllDB();
+        });
 
         Future<Difference> futureDifference = executorService.submit(() -> {
             Set<ImageFile> dbFiles = futureDbFiles.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             Set<ImageFile> diskFiles = futureDiskFiles.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             Difference d = new Difference(diskFiles, dbFiles);
             logger.debug("Calculated " + d);
-            return null;
+            return d;
         });
 
         executorService.submit(() -> {
-            Set<ImageFile> removed = futureDifference.get(TIMEOUT_SECONDS, TimeUnit.SECONDS).removedFiles;
-            if (removed != null) {
-                executorService.submit(() -> this.deleteThumbnails(removed));
-                executorService.submit(() -> this.deleteDb(removed));
+            try {
+                Set<ImageFile> removed = futureDifference.get(TIMEOUT_SECONDS, TimeUnit.SECONDS).removedFiles;
+                if (removed.size() > 0) {
+                    executorService.submit(() -> this.deleteThumbnails(removed));
+                    executorService.submit(() -> this.deleteDb(removed));
+                } else {
+                    logger.debug("0 files were removed, nothing to do, exiting");
+                }
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                logger.warn("Can not wait for the result", e);
             }
-            return null;
         });
 
         executorService.submit(() -> {
-            Set<ImageFile> newFiles = futureDifference.get(TIMEOUT_SECONDS, TimeUnit.SECONDS).newFiles;
-            if (newFiles.size() > 0) {
-                final BlockingQueue<ImageFile> updateFilesQueue = new LinkedBlockingQueue<>(newFiles);
+            try {
+                Set<ImageFile> newFiles = futureDifference.get(TIMEOUT_SECONDS, TimeUnit.SECONDS).newFiles;
+                if (newFiles.size() > 0) {
+                    final BlockingQueue<ImageFile> source = new LinkedBlockingQueue<>(newFiles);
 
-                IntStream.range(0, CPUS_NUMBER).forEach(i -> {
-                    executorService.submit(() -> updateThumbnail(updateFilesQueue));
-                });
+                    IntStream.range(0, CPUS_NUMBER).forEach(i -> {
+                        executorService.submit(() -> updateThumbnail(source));
+                    });
+                } else {
+                    logger.debug("0 files were updated, nothing to do, exiting");
+                }
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                logger.warn("Can not wait for the result", e);
             }
-            return null;
+            dbLock.release();
+            diskLock.release();
         });
     }
+
 
     private void updateThumbnail(BlockingQueue<ImageFile> filesQueue) {
         logger.trace("updateThumbnail started");
@@ -122,39 +138,34 @@ public class ImageProcessor {
                 filesDB.save(file);
                 c++;
             }
-            logger.info(c + " thumbs updated, exiting");
+            logger.info("updateThumbnail updated {} files , exiting", c);
         } catch (InterruptedException e) {
             logger.info("Interrupted while waitning for updateFilesQueue", e);
         }
     }
 
-    private Set<ImageFile> getDbAll() {
-        logger.trace("getDbAll started");
+    private Set<ImageFile> getAllDB() {
+        logger.trace("getAllDB started");
         Set<ImageFile> files = StreamSupport.stream(filesDB.findAll().spliterator(), true)
                 .collect(Collectors.toCollection(HashSet::new));
-        logger.debug("getDbAll found " + files.size());
+        logger.debug("getAllDB found " + files.size());
         return files;
     }
 
-    private Set<ImageFile> getDiskAll() {
-        logger.trace("getDiskAll started");
-        Set<ImageFile> diskFiles = null;
+    private Set<ImageFile> getAllDisk() {
+        logger.trace("getAllDisk started");
+        Set<ImageFile> diskFiles = new HashSet<>();
         try {
             diskFiles =
-                    directoryWalker.listFilesDeep(
-                            directoryWalker.getRoot())
+                    directoryManager.listFilesDeep(
+                            directoryManager.getRoot())
                             .stream()
-                            .map(p -> directoryWalker.getRoot().resolve(p))
-                            .map(sourcePath -> {
-                                try {
-                                    return ImageFile.build(sourcePath);
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            })
+                            .map(p -> directoryManager.getRoot().resolve(p))
+                            .map(ImageFile::build)
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toCollection(HashSet::new));
-            logger.debug("getDiskAll found " + diskFiles.size());
-        } catch (DirectoryWalkerException e) {
+            logger.debug("getAllDisk found " + diskFiles.size());
+        } catch (DirectoryManagerException e) {
             logger.error("Cant list files on disk", e);
         }
         return diskFiles;
@@ -163,7 +174,7 @@ public class ImageProcessor {
     private void deleteDb(Set<ImageFile> files) {
         logger.trace("deleteDb started");
         filesDB.deleteAll(files);
-        logger.debug("deleteDb removedFiles " + files.size());
+        logger.debug("deleteDb removed: " + files.size());
     }
 
     private void deleteThumbnails(Set<ImageFile> files) {
@@ -183,7 +194,7 @@ public class ImageProcessor {
                 deleted++;
             }
         }
-        logger.debug("deleteThumbnails skipped " + skipped + " removedFiles " + deleted);
+        logger.debug("deleteThumbnails skipped: " + skipped + " removed: " + deleted);
     }
 
     void copyFile(String inFile, String outFile) throws IOException {
@@ -199,6 +210,26 @@ public class ImageProcessor {
         }
     }
 
+    public void cleanUpRepository() {
+        executorService.submit(() -> {
+            try {
+                dbLock.acquire();
+                diskLock.acquire();
+
+                Set<ImageFile> all = getAllDB();
+                executorService.submit(() -> deleteDb(all));
+                executorService.submit(() -> deleteThumbnails(all));
+
+                logger.info("Deleted {} files", all.size());
+            } catch (InterruptedException e) {
+                logger.warn("Can not acquire lock", e);
+            } finally {
+                dbLock.release();
+                diskLock.release();
+            }
+        });
+    }
+
     private static class Difference {
         final Set<ImageFile> removedFiles;
         final Set<ImageFile> newFiles;
@@ -212,7 +243,7 @@ public class ImageProcessor {
             removedFiles = new HashSet<>(dbFiles);
             removedFiles.removeAll(diskFiles);
 
-            // get list of newFiles files
+            // get list of new files
             newFiles = new HashSet<>(diskFiles);
             newFiles.removeAll(dbFiles);
         }
@@ -220,7 +251,7 @@ public class ImageProcessor {
         @Override
         public String toString() {
             return String.format(
-                    "Diff [ removedFiles: %s; newFiles: %s  ]", removedFiles.size(), newFiles.size());
+                    "Diff [ -%s; +%s]", removedFiles.size(), newFiles.size());
         }
     }
 

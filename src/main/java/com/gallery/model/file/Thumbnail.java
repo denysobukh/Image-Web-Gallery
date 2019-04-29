@@ -1,4 +1,4 @@
-package com.gallery.model.filesystembackend;
+package com.gallery.model.file;
 
 
 import javax.imageio.ImageIO;
@@ -46,11 +46,11 @@ public class Thumbnail {
 
             }
 
-            BufferedImage bi = new BufferedImage(outputImage.getIconWidth(), outputImage.getIconHeight(), BufferedImage.TYPE_INT_RGB);
-            Graphics g = bi.getGraphics();
+            BufferedImage image = new BufferedImage(outputImage.getIconWidth(), outputImage.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics g = image.getGraphics();
             g.drawImage(outputImage.getImage(), 0, 0, null);
 
-            ImageIO.write(bi, "jpg", outFile);
+            ImageIO.write(image, "jpg", outFile);
         } catch (IOException ioe) {
             System.out.println("Error occurred saving scaled image");
         }

@@ -1,4 +1,4 @@
-package com.gallery.model.filesystembackend;
+package com.gallery.model.file;
 
 import java.util.Arrays;
 

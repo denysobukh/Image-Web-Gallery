@@ -1,11 +1,10 @@
-package com.gallery.model.filesystembackend;
+package com.gallery.model.file;
 
 
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -48,10 +47,13 @@ public class ImageFile implements Serializable {
     }
 
 
-    public static ImageFile build(Path sourcePath) throws IOException {
+    public static ImageFile build(Path sourcePath) {
+        ImageFile imageFile = null;
         File file = sourcePath.toAbsolutePath().toFile();
-        if (!file.exists()) throw new IOException(file.getAbsolutePath() + " file does not exist");
-        return new ImageFile(file.getAbsolutePath(), null, file.lastModified());
+        if (file.exists()) {
+            imageFile = new ImageFile(file.getAbsolutePath(), null, file.lastModified());
+        }
+        return imageFile;
     }
 
 

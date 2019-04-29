@@ -1,46 +1,43 @@
-package com.gallery.model.filesystembackend;
+package com.gallery.model.file;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * DirectoryWalker finds files and directories
+ * DirectoryManager finds files and directories
  * <p>
  * 2019-03-21 16:43 [Thursday]
  *
  * @author Dennis Obukhov
  */
-@Component("Walker")
-public class DirectoryWalker {
+public class DirectoryManager {
 
     private final Path rootDir;
     @Autowired
     private Logger logger;
 
-
     /**
-     * Constructs DirectoryWalker with the given path and sets it as the root directory
+     * Constructs DirectoryManager with the given path and sets it as the root directory
      *
-     * @param path to the root directory
-     * @throws DirectoryWalkerException if the specified path is not a directory
+     * @param directory is the root directory
+     * @throws DirectoryManagerException if the specified path is not a directory
      */
     @Autowired
-    public DirectoryWalker(@Qualifier("rootDir") Path path) throws DirectoryWalkerException {
-        LoggerFactory.getLogger(this.getClass()).debug("Constructor path = " + path);
-        rootDir = path.toAbsolutePath();
-        if (!Files.isDirectory(rootDir)) throw new DirectoryWalkerException("Is not a directory", rootDir);
+    public DirectoryManager(String directory) throws DirectoryManagerException {
+        LoggerFactory.getLogger(this.getClass()).debug("Constructed with path: " + directory);
+        rootDir = Paths.get(directory).toAbsolutePath();
+        if (!Files.isDirectory(rootDir)) throw new DirectoryManagerException("Is not a directory", rootDir);
     }
 
     /**
@@ -57,7 +54,7 @@ public class DirectoryWalker {
 
     @PostConstruct
     private void postConstruct() {
-        logger.debug("DirectoryWalker set root = " + rootDir.toAbsolutePath());
+        logger.debug("DirectoryManager set root = " + rootDir.toAbsolutePath());
     }
 
     /**
@@ -65,11 +62,11 @@ public class DirectoryWalker {
      *
      * @param path the given path
      * @return Path of parent directory
-     * @throws DirectoryWalkerException if the given path is invalid or filesystem error occurred
+     * @throws DirectoryManagerException if the given path is invalid or filesystem error occurred
      */
-    public Path getParent(Path path) throws DirectoryWalkerException {
+    public Path getParent(Path path) throws DirectoryManagerException {
         if (!withinRoot(path))
-            throw new DirectoryWalkerException("Path is out of the root or invalid", path);
+            throw new DirectoryManagerException("Path is out of the root or invalid", path);
         return path.compareTo(rootDir) == 0 ?
                 null :
                 rootDir.relativize(path.getParent());
@@ -80,11 +77,11 @@ public class DirectoryWalker {
      *
      * @param path the give path
      * @return the list of directories in the given Path or an empty list
-     * @throws DirectoryWalkerException if the given path is invalid or filesystem error occurred
+     * @throws DirectoryManagerException if the given path is invalid or filesystem error occurred
      */
-    public List<Path> listDirs(Path path) throws DirectoryWalkerException {
+    public List<Path> listDirs(Path path) throws DirectoryManagerException {
         if (!withinRoot(path))
-            throw new DirectoryWalkerException("Path is out of the root or invalid", path);
+            throw new DirectoryManagerException("Path is out of the root or invalid", path);
         try {
             return Files.walk(path, 1, FileVisitOption.FOLLOW_LINKS)
                     .filter(Files::isDirectory)
@@ -92,7 +89,7 @@ public class DirectoryWalker {
                     .map(p -> rootDir.relativize(p.normalize()))
                     .collect(Collectors.toCollection(ArrayList::new));
         } catch (IOException e) {
-            throw new DirectoryWalkerException(e);
+            throw new DirectoryManagerException(e);
         }
     }
 
@@ -101,9 +98,9 @@ public class DirectoryWalker {
      *
      * @param path the given path
      * @return the list of files in the given Path of empty list
-     * @throws DirectoryWalkerException if the given path is invalid or filesystem error occurred
+     * @throws DirectoryManagerException if the given path is invalid or filesystem error occurred
      */
-    public List<Path> listFiles(Path path) throws DirectoryWalkerException {
+    public List<Path> listFiles(Path path) throws DirectoryManagerException {
         return listFiles(path, 1, FileTypeFilter.IMAGE);
     }
 
@@ -112,15 +109,15 @@ public class DirectoryWalker {
      *
      * @param path the given path
      * @return the list of files in the given Path of empty list
-     * @throws DirectoryWalkerException if the given path is invalid or filesystem error occurred
+     * @throws DirectoryManagerException if the given path is invalid or filesystem error occurred
      */
-    public List<Path> listFilesDeep(Path path) throws DirectoryWalkerException {
+    public List<Path> listFilesDeep(Path path) throws DirectoryManagerException {
         return listFiles(path, Integer.MAX_VALUE, FileTypeFilter.IMAGE);
     }
 
-    private List<Path> listFiles(Path path, int maxDepth, FileTypeFilterI filter) throws DirectoryWalkerException {
+    private List<Path> listFiles(Path path, int maxDepth, FileTypeFilterI filter) throws DirectoryManagerException {
         if (!withinRoot(path))
-            throw new DirectoryWalkerException("Is out of the root or invalid", path);
+            throw new DirectoryManagerException("Is out of the root or invalid", path);
         try {
             return Files.walk(path, maxDepth, FileVisitOption.FOLLOW_LINKS)
                     .filter(Files::isRegularFile)
@@ -137,7 +134,7 @@ public class DirectoryWalker {
                     .map(p -> rootDir.relativize(p.normalize()))
                     .collect(Collectors.toCollection(ArrayList::new));
         } catch (IOException e) {
-            throw new DirectoryWalkerException(e);
+            throw new DirectoryManagerException(e);
         }
     }
 
@@ -147,9 +144,9 @@ public class DirectoryWalker {
      *
      * @param path the given path
      * @return the list of files along with directories in the given path of empty list if
-     * @throws DirectoryWalkerException if the given path is invalid or filesystem error occurred
+     * @throws DirectoryManagerException if the given path is invalid or filesystem error occurred
      */
-    public List<Path> listAll(Path path) throws DirectoryWalkerException {
+    public List<Path> listAll(Path path) throws DirectoryManagerException {
         List<Path> list = listDirs(path);
         list.addAll(listFiles(path));
         return list;

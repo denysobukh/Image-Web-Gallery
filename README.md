@@ -1,5 +1,5 @@
-# Filesystem-based Web Image Galley
+# Images Web Galley
 
-Web Image Gallery based on existing directory structure and images in it.
+The Image Web Gallery based on existing directory structure and images in it.
 One shouldn't upload images — just point the gallery to the existing directory! 
 

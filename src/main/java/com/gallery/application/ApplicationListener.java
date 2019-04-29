@@ -25,8 +25,7 @@ public class ApplicationListener {
 
     @EventListener
     public void onApplicationEvent(ApplicationStartedEvent event) {
-        logger.debug("dddd");
-        LoggerFactory.getLogger(GalleryApplication.class).debug("ApplicationStartedEvent Event");
+        logger.debug("onApplicationEvent fired");
     }
 
     @EventListener

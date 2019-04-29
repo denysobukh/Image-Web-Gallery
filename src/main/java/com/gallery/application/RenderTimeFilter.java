@@ -26,7 +26,7 @@ public class RenderTimeFilter implements Filter {
     @Lazy
     private Logger logger;
 
-    @Value("${gallery.log.renderingtime}")
+    @Value("${gallery.log.render-time}")
     private boolean on;
 
     @Override
