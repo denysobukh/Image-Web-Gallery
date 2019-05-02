@@ -71,12 +71,10 @@ public final class AdminController {
             if (diff.addedCount() > 0 || diff.removedCount() > 0) {
                 repo = directoryRepository.findAll();
             }
+
+            // TODO: 2019-05-02 more elegant
             Optional<Directory> repoRoot =
                     repo.stream().filter(Directory::isRoot).reduce((a, b) -> null);
-
-            // TODO: 2019-05-02 sorting of getChildren() from DB
-
-            logger.debug("===== " + repoRoot.get().getChildren());
 
             model.addAttribute("treeRoot", repoRoot.get());
 

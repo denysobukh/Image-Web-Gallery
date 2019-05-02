@@ -1,9 +1,11 @@
 package com.gallery.model.directory;
 
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.SortNatural;
 
 import javax.persistence.*;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
@@ -24,7 +26,8 @@ public class Directory implements Comparable<Directory> {
     @NaturalId
     private String path;
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Directory> children = new TreeSet<>();
+    @SortNatural
+    private SortedSet<Directory> children = new TreeSet<>();
     private long imagesCount;
     private boolean isWatched;
     private boolean isRoot;
@@ -40,12 +43,6 @@ public class Directory implements Comparable<Directory> {
     }
 
     public Directory() {
-    }
-
-    public Directory(String name, String path, Set<Directory> children) {
-        this.name = name;
-        this.path = path;
-        this.children = children;
     }
 
     public long getImagesCount() {
@@ -92,11 +89,11 @@ public class Directory implements Comparable<Directory> {
         this.path = path;
     }
 
-    public Set<Directory> getChildren() {
+    public SortedSet<Directory> getChildren() {
         return children;
     }
 
-    public void setChildren(Set<Directory> children) {
+    public void setChildren(SortedSet<Directory> children) {
         this.children = children;
     }
 
