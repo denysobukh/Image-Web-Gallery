@@ -1,4 +1,4 @@
-package com.gallery.model.file;
+package com.gallery.model.image;
 
 
 import javax.imageio.ImageIO;
@@ -16,14 +16,14 @@ import java.io.IOException;
  */
 public class Thumbnail {
 
-    private final ImageFile imageFile;
+    private final Image image;
 
-    public Thumbnail(ImageFile imageFile) {
-        this.imageFile = imageFile;
+    public Thumbnail(Image image) {
+        this.image = image;
     }
 
-    public ImageFile getImageFile() {
-        return imageFile;
+    public Image getImage() {
+        return image;
     }
 
     private void resize(File inFile, File outFile, int boundWidth, int boundHeight, boolean expand) {
@@ -38,9 +38,9 @@ public class Thumbnail {
 
             if (expand || originalWidth > boundWidth || originalHeight > boundHeight) {
                 if (originalHeight - (Math.abs(originalWidth - boundWidth) / originalRatio) <= boundHeight) {
-                    outputImage = new ImageIcon(inImage.getImage().getScaledInstance(boundWidth, -1, Image.SCALE_SMOOTH));
+                    outputImage = new ImageIcon(inImage.getImage().getScaledInstance(boundWidth, -1, java.awt.Image.SCALE_SMOOTH));
                 } else if (originalWidth - (Math.abs(originalHeight - boundHeight) * originalRatio) <= boundWidth) {
-                    outputImage = new ImageIcon(inImage.getImage().getScaledInstance(-1, boundHeight, Image.SCALE_SMOOTH));
+                    outputImage = new ImageIcon(inImage.getImage().getScaledInstance(-1, boundHeight, java.awt.Image.SCALE_SMOOTH));
                 }
             } else {
 

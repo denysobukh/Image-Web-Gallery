@@ -9,18 +9,13 @@
     /*font-size: 0.85rem;*/
     font-size: 1.2rem;
 }
+
 .thumbnails img {
     height: 12rem;
     padding: 0rem;
     margin: 0rem 0.3rem 0.3rem 0rem ;
     border: 1px solid #e8ecf0;
 }
-
-div.dirtree {
-    padding-left: 0.1rem;
-}
-
-
 
 div.dirtree  {
     background-color: #f0f0f0;
@@ -30,9 +25,8 @@ div.dirtree  {
     overflow-wrap: break-word;
 }
 
-ul.unbullet, ul.buttons {
+ul.unbullet, ul.buttons,ul.tree  {
     list-style-type: none;
-    margin: 0rem;
 }
 
 ul.buttons li {

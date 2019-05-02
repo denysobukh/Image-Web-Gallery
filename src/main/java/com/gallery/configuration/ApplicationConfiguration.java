@@ -1,11 +1,10 @@
 package com.gallery.configuration;
 
-import com.gallery.model.file.DirectoryManager;
-import com.gallery.model.file.DirectoryManagerException;
+import com.gallery.model.Disk;
+import com.gallery.model.DiskException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InjectionPoint;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +19,7 @@ import java.nio.file.FileSystems;
 @Configuration
 @EnableAspectJAutoProxy
 @EnableWebMvc
-public class GalleryConfiguration implements WebMvcConfigurer {
+public class ApplicationConfiguration implements WebMvcConfigurer {
 
     @Value("${gallery.storage.images-directory}")
     private String imagesDirectory;
@@ -35,22 +34,21 @@ public class GalleryConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    @Qualifier("FilesDirectoryManager")
-    public DirectoryManager getDirectoryManager() throws DirectoryManagerException {
-        return new DirectoryManager(imagesDirectory);
+    public Disk getDirectoryManager() throws DiskException {
+        return new Disk(imagesDirectory);
 
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         LoggerFactory.getLogger(this.getClass())
-                .debug("Static content is being served from file:" + imagesDirectory);
+                .debug("Static content is being served from directory:" + imagesDirectory);
 
         registry.addResourceHandler("/t/**")
-                .addResourceLocations("file://" + thumbnailsDirectory + FileSystems.getDefault().getSeparator());
+                .addResourceLocations("directory://" + thumbnailsDirectory + FileSystems.getDefault().getSeparator());
 
         registry.addResourceHandler("/f/**")
-                .addResourceLocations("file://" + imagesDirectory + FileSystems.getDefault().getSeparator());
+                .addResourceLocations("file:" + imagesDirectory + FileSystems.getDefault().getSeparator());
 
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/");

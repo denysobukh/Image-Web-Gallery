@@ -14,12 +14,12 @@ import java.sql.Types;
 import java.util.Objects;
 
 /**
- * DBPathType class
+ * PathType class
  *
  * @author Dennis Obukhov
  * @date 2019-04-12 14:34 [Friday]
  */
-public class DBPathType implements UserType {
+public class PathType implements UserType {
     @Override
     public int[] sqlTypes() {
         return new int[]{Types.VARCHAR};

@@ -33,6 +33,10 @@ mvnw
 mvnw.cmd
 /.mvn/
 
+pom.xml.releaseBackup
+release.properties
+
+
 src/main/java/sandbox
 cache/*
 

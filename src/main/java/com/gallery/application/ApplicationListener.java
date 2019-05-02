@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  * @author Dennis Obukhov
  */
 @Component
-public class ApplicationListener {
+public final class ApplicationListener {
 
 
     @Autowired

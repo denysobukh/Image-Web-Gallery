@@ -8,24 +8,32 @@
 <div class="container-fluid">
 </div>
 <div class="container-fluid middle">
-    <div class="row py-3">
-        <div class="col">
-            <ul class="buttons">
-                <li>
-                    <button type="button" class="btn btn-primary" th:href="@{/api/scan}">Scan</button>
-                </li>
-                <li>
-                    <button type="button" class="btn btn-primary" th:href="@{/api/cleanup}">Clean Up</button>
-                </li>
-                <li>
-                    <button type="button" class="btn btn-primary" th:href="@{/dd}">Error</button>
-                </li>
-            </ul>
+    <div class="row py-3" th:if="${treeRoot}">
+        <div class="col px-2">
+            <section class="tree" th:include="fragments/treeleaf :: submenu"
+                     th:with="dirsList=${treeRoot.getChildren()}"></section>
+        </div>
+        <div class="col-10 thumbnails px-2">
         </div>
     </div>
     <div class="row py-3" th:if="${statusLine}">
         <div class="col">
             <span th:text="${statusLine}"/>
+        </div>
+    </div>
+    <div class="row py-3">
+        <div class="col">
+            <ul class="buttons">
+                <li>
+                    <button class="btn btn-primary" th:href="@{/api/scan}" type="button">Scan</button>
+                </li>
+                <li>
+                    <button class="btn btn-primary" th:href="@{/api/cleanup}" type="button">Clean Up</button>
+                </li>
+                <li>
+                    <button class="btn btn-primary" th:href="@{/dd}" type="button">Error</button>
+                </li>
+            </ul>
         </div>
     </div>
     <div class="row py-2">

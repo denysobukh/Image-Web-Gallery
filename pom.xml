@@ -10,24 +10,31 @@
     </parent>
     <groupId>com.dennisobukhov</groupId>
     <artifactId>gallery</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>gallery - An Images Web Gallery</name>
+    <version>0.1.0</version>
+    <path>gallery - An Images Web Gallery</path>
     <description>Images Web Gallery</description>
-<!--
-    <packaging>pom</packaging>
-    <modules>
-        <module>lib/imgscalr</module>
-    </modules>
-    -->
+
+    <scm>
+        <connection>scm:git:git@github.com:denysobukh/Image-Web-Gallery.git</connection>
+        <developerConnection>scm:git:git@github.com:denysobukh/Image-Web-Gallery.git</developerConnection>
+        <url>git@github.com:denysobukh/Image-Web-Gallery.git</url>
+        <tag>gallery-0.1.0</tag>
+    </scm>
+    <!--
+        <packaging>pom</packaging>
+        <modules>
+            <module>lib/imgscalr</module>
+        </modules>
+        -->
     <properties>
         <java.version>1.8</java.version>
     </properties>
     <dependencies>
-<!--        <dependency>
-            <groupId>org.imgscalr</groupId>
-            <artifactId>imgscalr-lib</artifactId>
-            <version>4.3-SNAPSHOT</version>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>org.imgscalr</groupId>
+                    <artifactId>imgscalr-lib</artifactId>
+                    <version>4.3-SNAPSHOT</version>
+                </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -66,10 +73,29 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Dspring.profiles.active=application-test.properties</argLine>
+                </configuration>
             </plugin>
         </plugins>
     </build>

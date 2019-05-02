@@ -1,16 +1,16 @@
-package com.gallery.model.file;
+package com.gallery.model.image;
 
 import java.util.Arrays;
 
 /**
- * FileTypeFilter class
- * represents possible file's types and maps to extension
- * also provides functional interface for test if the given extension String is of a file type
+ * FileFilter class
+ * represents possible directory's types and maps to extension
+ * also provides functional interface for test if the given extension String is of a directory type
  *
  * @author Dennis Obukhov
  * @date 2019-04-12 09:20 [Friday]
  */
-public enum FileTypeFilter implements FileTypeFilterI {
+public enum FileFilter implements FileFilterI {
 
     /**
      * represents supported images extensions:
@@ -30,20 +30,19 @@ public enum FileTypeFilter implements FileTypeFilterI {
 
     private final String[] extensions;
 
-    FileTypeFilter(String... values) {
+    FileFilter(String... values) {
         this.extensions = values;
     }
 
     /**
-     * Tests if the given extension is one of allowed for the type
+     * Tests if the given name ends with certain string
      *
-     * @param ext to isTheRootDir
+     * @param name of file
      * @return {@code true} if the given extension is image extension
      */
-    public boolean isA(String ext) {
-        return Arrays.stream(extensions).anyMatch(
-                t -> t.equals(ext.toLowerCase())
-        );
+    public boolean isA(String name) {
+        String ext = name.substring(name.toLowerCase().lastIndexOf(".") + 1);
+        return Arrays.asList(extensions).contains(ext);
     }
 }
 

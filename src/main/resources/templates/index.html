@@ -8,16 +8,14 @@
 <div class="container-fluid middle">
     <div class="row">
         <div class="col-2 px-2">
-            <div class="dirtree">
-                <ul class="unbullet">
-                    <li th:each="p: ${paths}">
-                        <a th:href="@{'/browse?d=' + ${p.getUrl()}}" th:text="${p.getName()}">#</a>
-                    </li>
-                </ul>
-            </div>
+            <h2>
+                directoryTreeBuilder
+            </h2>
         </div>
         <div class="col-10 thumbnails px-2">
-            <img class="img-thumbnail" th:alt="${i}" th:each="i : ${images}" th:src="@{'/f/' + ${i}}"/>
+            <h2>
+                images
+            </h2>
         </div>
     </div>
 </div>

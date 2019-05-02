@@ -1,12 +1,12 @@
-package com.gallery.model.file;
+package com.gallery.model.image;
 
 /**
- * FileTypeFilterI class
+ * FileFilterI class
  *
  * @author Dennis Obukhov
  * @date 2019-04-14 09:37 [Sunday]
  */
 @FunctionalInterface
-public interface FileTypeFilterI {
+public interface FileFilterI {
     boolean isA(String ext);
 }

@@ -1,0 +1,19 @@
+<div th:fragment="submenu" th:remove="tag">
+    <ul class="tree">
+        <li th:each="dir : ${dirsList}">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" th:checked="${dir.isWatched()}"
+                       type="checkbox">
+                <a href="javascript:void(0);"
+                   th:attr="data-path=${dir.getPath()}"
+                   th:class="${!dir.isWatched()} ? 'font-weight-light text-secondary'"
+                   th:text="${dir.getName()}"></a>
+                <span th:class="${!dir.isWatched()} ? 'font-weight-light text-secondary'"
+                      th:if="${dir.getImagesCount()>0}"
+                      th:text="${'(' + dir.getImagesCount() + ')'}"></span>
+            </div>
+            <div th:include="fragments/treeleaf :: submenu"
+                 th:remove="tag" th:with="dirsList = ${dir.getChildren()}"/>
+        </li>
+    </ul>
+</div>

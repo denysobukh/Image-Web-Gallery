@@ -1,7 +1,7 @@
 package com.gallery;
 
-import com.gallery.model.file.ImageFile;
-import com.gallery.model.file.FileRepository;
+import com.gallery.model.image.Image;
+import com.gallery.model.image.ImageCrudRepository;
 import com.gallery.model.user.User;
 import com.gallery.model.user.UserPreferences;
 import com.gallery.model.user.UserPreferencesRepository;
@@ -25,7 +25,7 @@ public class GalleryApplication {
     private Logger logger;
 
     @Autowired
-    private FileRepository fileRepository;
+    private ImageCrudRepository imageCrudRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -54,7 +54,7 @@ public class GalleryApplication {
     CommandLineRunner commandLineRunner() {
         return args -> {
             if (console) {
-                fileRepository.deleteAll();
+                imageCrudRepository.deleteAll();
                 userRepository.deleteAll();
 
                 UserPreferences userPreferences = context.getBean(UserPreferences.class);
@@ -70,7 +70,7 @@ public class GalleryApplication {
 
                 userRepository.save(user);
 
-                for (ImageFile f : fileRepository.findAll()) {
+                for (Image f : imageCrudRepository.findAll()) {
                     System.out.println(f);
                 }
 

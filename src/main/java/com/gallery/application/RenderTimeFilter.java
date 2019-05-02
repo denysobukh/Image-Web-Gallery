@@ -20,18 +20,18 @@ import java.io.IOException;
  */
 
 @Component
-public class RenderTimeFilter implements Filter {
+public final class RenderTimeFilter implements Filter {
 
     @Autowired
     @Lazy
     private Logger logger;
 
     @Value("${gallery.log.render-time}")
-    private boolean on;
+    private boolean enabled;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (on) {
+        if (enabled) {
             HttpServletRequest req = (HttpServletRequest) request;
             long nanoTime = System.nanoTime();
             chain.doFilter(request, response);
