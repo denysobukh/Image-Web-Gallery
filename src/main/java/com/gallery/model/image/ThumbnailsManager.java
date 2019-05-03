@@ -1,5 +1,6 @@
 package com.gallery.model.image;
 
+import com.gallery.application.BackgroundExecutor;
 import com.gallery.model.Difference;
 import com.gallery.model.directory.DirectoryRepository;
 import com.gallery.model.Disk;
@@ -36,7 +37,8 @@ public class ThumbnailsManager {
      */
     private static final int TIMEOUT_SECONDS = 15;
 
-    private final ExecutorService executorService = Executors.newWorkStealingPool();
+    @Autowired
+    private BackgroundExecutor executorService;
     private Semaphore dbLock = new Semaphore(1);
     private Semaphore diskLock = new Semaphore(1);
     @Autowired
@@ -92,7 +94,7 @@ public class ThumbnailsManager {
                 Set<Image> newFiles = futureDifference.get(TIMEOUT_SECONDS, TimeUnit.SECONDS).getAdded();
                 if (newFiles.size() > 0) {
                     final BlockingQueue<Image> source = new LinkedBlockingQueue<>(newFiles);
-// TODO: 2019-05-02  
+//                    TODO: 2019-05-02
 //                    IntStream.range(0, CPUS_NUMBER).forEach(i -> {
 //                        executorService.submit(() -> updateThumbnail(source));
 //                    });
@@ -116,7 +118,7 @@ public class ThumbnailsManager {
         try {
             while ((file = filesQueue.poll(TIMEOUT_SECONDS, TimeUnit.SECONDS)) != null) {
                 // TODO: 2019-04-25 generate thumbnail
-                file.setThumbnail(file.calculateThumbnail());
+                // file.setThumbnail(file.calculateThumbnail());
                 filesDB.save(file);
                 c++;
             }

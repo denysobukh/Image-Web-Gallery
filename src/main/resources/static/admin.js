@@ -36,10 +36,10 @@ $(document).ready(function () {
             success: function (result) {
                 $("div.thumbnails").empty();
                 result.forEach(function(element) {
-                    $("div.thumbnails").append("<img class=\"img-thumbnail\" src=\"/f/"+ element.source + "\"/>")
+                    n = $( "<img class=\"img-thumbnail\" src=\"/preview?image="+ element.source + "\"/>" );
+                    $("div.thumbnails").append(n);
                 })
             },
         });
     }
-
 });

@@ -72,21 +72,6 @@ public class Image implements Serializable {
         this.thumbnail = thumbnail;
     }
 
-    String calculateThumbnail() {
-        String value = source;
-        String myHash;
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(value.getBytes());
-            byte[] digest = md.digest();
-            myHash = DatatypeConverter.printHexBinary(digest).toLowerCase();
-
-        } catch (NoSuchAlgorithmException e) {
-            throw new UnsupportedOperationException(e);
-        }
-        return myHash;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;

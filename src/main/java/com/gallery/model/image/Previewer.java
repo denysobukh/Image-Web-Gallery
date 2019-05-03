@@ -1,30 +1,44 @@
 package com.gallery.model.image;
 
 
+import net.coobird.thumbnailator.Thumbnails;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.xml.bind.DatatypeConverter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 /**
- * Thumbnail class
+ * Previewer class
  *
  * @author Dennis Obukhov
  * @date 2019-04-14 12:08 [Sunday]
  */
-public class Thumbnail {
+@Component
+public class Previewer {
 
-    private final Image image;
-
-    public Thumbnail(Image image) {
-        this.image = image;
-    }
-
-    public Image getImage() {
-        return image;
-    }
+    private static final String PATH_SEPARATOR = FileSystems.getDefault().getSeparator();
+    @Value("${gallery.storage.images-directory}")
+    private String imagesDirectory;
+    @Value("${gallery.storage.thumbnails-directory}")
+    private String thumbnailsDirectory;
+    @Autowired
+    private Logger logger;
 
     private void resize(File inFile, File outFile, int boundWidth, int boundHeight, boolean expand) {
         try {
@@ -81,5 +95,37 @@ public class Thumbnail {
          */
     }
 
+    String md5(String value) {
+        String myHash;
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(value.getBytes());
+            byte[] digest = md.digest();
+            myHash = DatatypeConverter.printHexBinary(digest).toLowerCase();
+
+        } catch (NoSuchAlgorithmException e) {
+            throw new UnsupportedOperationException(e);
+        }
+        return myHash;
+    }
+
+    private String getAbsolutePath(String source) {
+        return imagesDirectory + PATH_SEPARATOR + source;
+    }
+
+
+    public byte[] getBytes(String source) throws IOException {
+        Path path = Paths.get(getAbsolutePath(source));
+        return Files.readAllBytes(path);
+    }
+
+    public String getMime(String source) throws IOException {
+        Path path = Paths.get(imagesDirectory, PATH_SEPARATOR, source);
+        return Files.probeContentType(path);
+    }
+
+    public void writePreview(String source, OutputStream outputStream) throws IOException {
+        Thumbnails.of(getAbsolutePath(source)).height(256).toOutputStream(outputStream);
+    }
 
 }

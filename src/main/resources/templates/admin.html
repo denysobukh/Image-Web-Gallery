@@ -5,7 +5,15 @@
 </head>
 <body>
 <div th:replace="fragments/top"></div>
-<div class="container-fluid">
+<div class="row py-2">
+    <div class="col px-2">
+        <div class="alert alert-primary" role="alert">
+            This is a primary alert—check it out!
+        </div>
+        <div class="alert alert-danger" role="alert">
+            This is a danger alert—check it out!
+        </div>
+    </div>
 </div>
 <div class="container-fluid middle">
     <div class="row py-3" th:if="${treeRoot}">
@@ -34,16 +42,6 @@
                     <button class="btn btn-primary" th:href="@{/dd}" type="button">Error</button>
                 </li>
             </ul>
-        </div>
-    </div>
-    <div class="row py-2">
-        <div class="col px-2">
-            <div class="alert alert-primary" role="alert">
-                This is a primary alert—check it out!
-            </div>
-            <div class="alert alert-danger" role="alert">
-                This is a danger alert—check it out!
-            </div>
         </div>
     </div>
     <div class="row py-3" th:if="${files}">

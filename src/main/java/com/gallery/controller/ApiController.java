@@ -2,7 +2,6 @@ package com.gallery.controller;
 
 import com.gallery.application.ApplicationException;
 import com.gallery.model.Disk;
-import com.gallery.model.image.Image;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -12,7 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +37,6 @@ public final class ApiController {
 
     @RequestMapping(value = "/load-images", produces = "application/json")
     public List<Object> listImages(Model model, @RequestParam("dir") Optional<String> dirOpt) throws ApplicationException {
-
         Path currentDir, rootDir;
         rootDir = storage.getRoot();
 
@@ -48,20 +49,13 @@ public final class ApiController {
         } else {
             currentDir = rootDir;
         }
-        logger.debug("currentDir = " + currentDir);
-        List<Object> images =
-                storage.listFiles(currentDir, 1)
-                        .stream()
-                        .map(path -> new Object(){
-                            public String source = path.toString();
-                        })
-                        .collect(Collectors.toCollection(LinkedList::new));
-
-        logger.debug("found {} images", images.size());
-
-        return new ArrayList<>(images);
+        return storage.listFiles(currentDir, 1)
+                .stream()
+                .map(path -> new Object() {
+                    public String source = path.toString();
+                })
+                .collect(Collectors.toList());
     }
-
 
     @RequestMapping(value = "/scan", produces = "application/json")
     public Map<String, String> scan(Model model) throws ApplicationException {
