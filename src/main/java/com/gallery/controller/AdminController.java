@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -73,14 +72,19 @@ public final class AdminController {
             }
 
             // TODO: 2019-05-02 more elegant
-            Optional<Directory> repoRoot =
-                    repo.stream().filter(Directory::isRoot).reduce((a, b) -> null);
+            Optional<Directory> rootDir =
+                    repo.stream().filter(Directory::isRoot).findFirst();
 
-            model.addAttribute("treeRoot", repoRoot.get());
-
+            if (rootDir.isPresent()) {
+                model.addAttribute("treeRoot", rootDir.get());
+            } else {
+                logger.warn("unable to determine root node from repository");
+            }
         } catch (DiskException e) {
-            logger.warn("can not root tree", e);
+            logger.warn("unable to get dirs tree from disk", e);
         }
+
+
         return "admin";
     }
 }

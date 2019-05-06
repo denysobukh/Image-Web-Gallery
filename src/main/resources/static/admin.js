@@ -1,9 +1,13 @@
 $(document).ready(function () {
     $(".alert").hide();
 
-    $("button").click(function(event){
+    $(".button-href").click(function(event){
         url = $(event.target).attr("href");
         getAjaxMessage(url);
+    });
+
+    $(".toggle-tree").click(function(){
+        $("div.tree").toggle();
     });
 
     $("ul.tree a").click(function(event){

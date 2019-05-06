@@ -6,7 +6,8 @@ import java.util.Set;
 
 /**
  * Difference class
- * Finds the difference of two sets
+ * Finds the difference between two sets
+ * which represent current and previous states
  *
  * @author Dennis Obukhov
  * @date 2019-05-02 14:22 [Thursday]

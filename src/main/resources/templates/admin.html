@@ -5,51 +5,47 @@
 </head>
 <body>
 <div th:replace="fragments/top"></div>
-<div class="row py-2">
-    <div class="col px-2">
-        <div class="alert alert-primary" role="alert">
-            This is a primary alert—check it out!
+<div class="container-fluid middle">
+    <div class="d-flex flex-row">
+        <div class="p-2">
+            <span class="align-middle">
+                <ul class="buttons">
+                    <li>
+                        <button class="btn btn-primary toggle-tree" type="button">Tree</button>
+                    </li>
+                    <li>
+                        <button class="btn btn-primary button-href" th:href="@{/api/scan}" type="button">Scan</button>
+                    </li>
+                    <li>
+                        <button class="btn btn-primary button-href" th:href="@{/api/cleanup}" type="button">Clean Up</button>
+                    </li>
+                    <li>
+                        <button class="btn btn-primary button-href" th:href="@{/dd}" type="button">Error</button>
+                    </li>
+                </ul>
+            </span>
         </div>
-        <div class="alert alert-danger" role="alert">
-            This is a danger alert—check it out!
+        <div class="p-2" th:if="${statusLine}">
+            <span class="align-middle" th:text="${statusLine}">statusLine</span>
         </div>
     </div>
-</div>
-<div class="container-fluid middle">
-    <div class="row py-3" th:if="${treeRoot}">
+    <div class="row">
         <div class="col px-2">
+            <div class="alert alert-primary" role="alert">
+                This is a primary alert—check it out!
+            </div>
+            <div class="alert alert-danger" role="alert">
+                This is a danger alert—check it out!
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-row" th:if="${treeRoot}">
+        <div class="p-2 tree">
             <section class="tree" th:include="fragments/treeleaf :: submenu"
                      th:with="dirsList=${treeRoot.getChildren()}"></section>
         </div>
-        <div class="col-10 thumbnails px-2">
-        </div>
-    </div>
-    <div class="row py-3" th:if="${statusLine}">
-        <div class="col">
-            <span th:text="${statusLine}"/>
-        </div>
-    </div>
-    <div class="row py-3">
-        <div class="col">
-            <ul class="buttons">
-                <li>
-                    <button class="btn btn-primary" th:href="@{/api/scan}" type="button">Scan</button>
-                </li>
-                <li>
-                    <button class="btn btn-primary" th:href="@{/api/cleanup}" type="button">Clean Up</button>
-                </li>
-                <li>
-                    <button class="btn btn-primary" th:href="@{/dd}" type="button">Error</button>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="row py-3" th:if="${files}">
-        <div class="col">
-            <ul>
-                <li th:class="${iterStat.odd}? 'odd'" th:each="file,iterStat : ${files}">
-                    <span th:text="${file}">File</span></li>
-            </ul>
+        <div class="p-2 thumbnails px-2">
         </div>
     </div>
 </div>

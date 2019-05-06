@@ -1,8 +1,7 @@
 package com.gallery.model;
 
 import com.gallery.model.directory.Directory;
-import com.gallery.model.image.FileFilter;
-import com.gallery.model.image.FileFilterI;
+import com.gallery.model.image.ExtensionFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ public class Disk {
 
     private final Path rootPath;
     private final Map<String, Directory> directories = new HashMap<>();
-    @SuppressWarnings("unused")
     @Autowired
     private Logger logger;
     private volatile Directory rootDirectory;
@@ -94,13 +92,7 @@ public class Disk {
             throw new DiskException("Is out of the rootDirectory or invalid", path);
         try {
             return Files.walk(path, maxDepth, FileVisitOption.FOLLOW_LINKS)
-                    .filter(Files::isRegularFile)
-                    /*
-                     it's assumed that the directory's extension comes after the last dot
-                     it is extracted and isTheRootDir it against valid image extensions
-                     if it's not valid it is omitted
-                    */
-                    .filter(f -> FileFilter.IMAGE.isA(f.getFileName().toString()))
+                    .filter(f -> ExtensionFileFilter.IMAGE.accept(f.toFile()))
                     .map(p -> rootPath.relativize(p.normalize()))
                     .collect(Collectors.toCollection(LinkedList::new));
         } catch (IOException e) {
@@ -167,8 +159,7 @@ public class Disk {
         long c = 0;
         try {
             c = Files.walk(path, 1, FileVisitOption.FOLLOW_LINKS)
-                    .filter(Files::isRegularFile)
-                    .filter(p->FileFilter.IMAGE.isA(p.getFileName().toString()))
+                    .filter(p -> ExtensionFileFilter.IMAGE.accept(p.toFile()))
                     .count();
         } catch (IOException e) {
             logger.error("Cannot count files {}", path.toString(), e);
