@@ -4,7 +4,6 @@ import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.SortNatural;
 
 import javax.persistence.*;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -146,6 +145,12 @@ public class Directory implements Comparable<Directory> {
 
     @Override
     public int compareTo(Directory o) {
-        return String.CASE_INSENSITIVE_ORDER.compare(name, o.name);
+        int c = 0;
+        if (name != null && o.name != null) {
+            c = String.CASE_INSENSITIVE_ORDER.compare(name, o.name);
+        } else {
+            c = Long.compare(id, o.id);
+        }
+        return c;
     }
 }

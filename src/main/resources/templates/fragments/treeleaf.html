@@ -2,8 +2,10 @@
     <ul class="tree">
         <li th:each="dir : ${dirsList}">
             <div class="form-check form-check-inline">
-                <input class="form-check-input" th:checked="${dir.isWatched()}"
-                       type="checkbox">
+                <input class="form-check-input"
+                       th:checked="${dir.isWatched()}"
+                       type="checkbox"
+                       th:attr="data-path=${dir.getPath()}">
                 <a href="javascript:void(0);"
                    th:attr="data-path=${dir.getPath()}"
                    th:class="${!dir.isWatched()} ? 'font-weight-light text-secondary'"

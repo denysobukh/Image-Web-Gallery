@@ -2,6 +2,8 @@ package com.gallery.controller;
 
 import com.gallery.application.ApplicationException;
 import com.gallery.model.Disk;
+import com.gallery.model.directory.Directory;
+import com.gallery.model.directory.DirectoryRepository;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -11,10 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -31,11 +30,14 @@ public final class ApiController {
 
 
     @Autowired
-    Disk storage;
+    private Disk storage;
     @Autowired
-    Logger logger;
+    private Logger logger;
 
-    @RequestMapping(value = "/load-images", produces = "application/json")
+    @Autowired
+    private DirectoryRepository directoryRepository;
+
+    @RequestMapping(value = "/list-previews", produces = "application/json")
     public List<Object> listImages(Model model, @RequestParam("dir") Optional<String> dirOpt) throws ApplicationException {
         Path currentDir, rootDir;
         rootDir = storage.getRoot();
@@ -54,7 +56,31 @@ public final class ApiController {
                 .map(path -> new Object() {
                     public String source = path.toString();
                 })
+                .sorted((a, b) -> String.CASE_INSENSITIVE_ORDER.compare(a.source, b.source))
                 .collect(Collectors.toList());
+    }
+
+
+    @RequestMapping(value = "/watch-directory", produces = "application/json")
+    public Map<String, Boolean> watchDirectory(Model model, @RequestParam("dir") Optional<String> pathOpt) throws ApplicationException {
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", false);
+        if (pathOpt.isPresent()) {
+            String path = pathOpt.get();
+            logger.trace("adding watch for " + path);
+            Set<Directory> directories = directoryRepository.findByPath(path);
+            if (directories.size() == 1) {
+                Directory directory = directories.iterator().next();
+                boolean isWatched = !directory.isWatched();
+                directory.setWatched(isWatched);
+                directoryRepository.save(directory);
+                response.put("success", true);
+                response.put("isWatched", isWatched);
+            } else {
+                logger.warn("unable to find a directory {}, candidates {}", path, directories.size());
+            }
+        }
+        return response;
     }
 
     @RequestMapping(value = "/scan", produces = "application/json")

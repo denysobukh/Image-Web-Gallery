@@ -15,4 +15,5 @@ import java.util.SortedSet;
  */
 public interface DirectoryRepository  extends CrudRepository<Directory, Long> {
     Set<Directory> findAll();
+    Set<Directory> findByPath(String path);
 }

@@ -1,27 +1,37 @@
 $(document).ready(function () {
     $(".alert").hide();
 
+    // toolbar buttons
     $(".button-href").click(function(event){
         url = $(event.target).attr("href");
-        getAjaxMessage(url);
+        buttonAction(url);
     });
 
+    // directories tree view toggle
     $(".toggle-tree").click(function(){
         $("div.tree").toggle();
     });
 
+    // directory checkbox handler
+    $("div.tree input[type='checkbox']").change(function(){
+        toggleDirectory(this);
+    });
+
+    // directory on click loads images preview
     $("ul.tree a").click(function(event){
         path = $(event.target).attr("data-path");
         loadImages(path);
     });
 
+    // general errors xhr requests handler
     $(document).ajaxError(function( event, jqxhr, settings, thrownError ) {
         $(".alert-danger").text("Request can not complete: " + jqxhr.status + " " + jqxhr.statusText);
         $(".alert-danger").show();
         $(".alert-danger").fadeOut(2000);
     });
 
-    function getAjaxMessage(url) {
+    // toolbar button's action requesting
+    function buttonAction(url) {
         $.getJSON({
             url: url,
             data: null,
@@ -33,9 +43,10 @@ $(document).ready(function () {
         });
     }
 
+    // loads images preview of a directory
     function loadImages(path) {
         $.getJSON({
-            url: "/api/load-images",
+            url: "/api/list-previews",
             data: {dir: path},
             success: function (result) {
                 $("div.thumbnails").empty();
@@ -44,6 +55,17 @@ $(document).ready(function () {
                     );
                     $("div.thumbnails").append(n);
                 })
+            },
+        });
+    }
+
+    // directory checkbox action
+    function toggleDirectory(checkbox) {
+        $.getJSON({
+            url: "/api/watch-directory",
+            data: {dir: $(checkbox).attr("data-path")},
+            success: function (result) {
+                checkbox.prop("checked", !checkBoxes.prop("checked"));
             },
         });
     }
