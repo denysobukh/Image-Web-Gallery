@@ -40,7 +40,8 @@ $(document).ready(function () {
             success: function (result) {
                 $("div.thumbnails").empty();
                 result.forEach(function(element) {
-                    n = $( "<img class=\"img-thumbnail\" src=\"/preview?image="+ element.source + "\"/>" );
+                    n = $( "<a href=\"/f/" + element.source +"\" target=\"blank\"><img class=\"img-thumbnail\" src=\"/preview?image=" + element.source + "\"/></a>"
+                    );
                     $("div.thumbnails").append(n);
                 })
             },
