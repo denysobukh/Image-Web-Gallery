@@ -14,7 +14,7 @@
                       th:if="${dir.getImagesCount()>0}"
                       th:text="${'(' + dir.getImagesCount() + ')'}"></span>
             </div>
-            <div th:include="fragments/treeleaf :: submenu"
+            <div th:include="fragments/treeleaf_admin :: submenu"
                  th:remove="tag" th:with="dirsList = ${dir.getChildren()}"/>
         </li>
     </ul>

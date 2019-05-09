@@ -6,16 +6,12 @@
 <body>
 <div th:replace="fragments/top"></div>
 <div class="container-fluid middle">
-    <div class="row">
-        <div class="col-2 px-2">
-            <h2>
-                directoryTreeBuilder
-            </h2>
+    <div class="d-flex flex-row" th:if="${watchedList}">
+        <div class="p-2 tree">
+            <section class="tree" th:include="fragments/treeleaf_user :: submenu"
+                     th:with="dirsList=${watchedList}"></section>
         </div>
-        <div class="col-10 thumbnails px-2">
-            <h2>
-                images
-            </h2>
+        <div class="p-2 thumbnails px-2">
         </div>
     </div>
 </div>

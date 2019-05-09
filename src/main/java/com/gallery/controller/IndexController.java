@@ -1,6 +1,8 @@
 package com.gallery.controller;
 
 import com.gallery.model.Disk;
+import com.gallery.model.directory.Directory;
+import com.gallery.model.directory.DirectoryRepository;
 import com.gallery.model.image.Previewer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static javax.servlet.RequestDispatcher.ERROR_STATUS_CODE;
@@ -33,6 +36,9 @@ public final class IndexController {
     @Autowired
     private Previewer previewer;
 
+    @Autowired
+    private DirectoryRepository directoryRepository;
+
 
     @ModelAttribute
     public void setPreferences(Model model, HttpServletRequest request) {
@@ -42,6 +48,8 @@ public final class IndexController {
 
     @GetMapping(value = "/")
     public String error(Model model) {
+        Set<Directory> watched = directoryRepository.findByIsWatched(true);
+        model.addAttribute("watchedList", watched);
         return "index";
     }
 

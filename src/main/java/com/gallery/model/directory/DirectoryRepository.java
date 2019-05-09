@@ -1,6 +1,7 @@
 package com.gallery.model.directory;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -16,4 +17,5 @@ import java.util.SortedSet;
 public interface DirectoryRepository  extends CrudRepository<Directory, Long> {
     Set<Directory> findAll();
     Set<Directory> findByPath(String path);
+    Set<Directory> findByIsWatched(boolean isWatched);
 }

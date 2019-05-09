@@ -42,7 +42,7 @@
 
     <div class="d-flex flex-row" th:if="${treeRoot}">
         <div class="p-2 tree">
-            <section class="tree" th:include="fragments/treeleaf :: submenu"
+            <section class="tree" th:include="fragments/treeleaf_admin :: submenu"
                      th:with="dirsList=${treeRoot.getChildren()}"></section>
         </div>
         <div class="p-2 thumbnails px-2">

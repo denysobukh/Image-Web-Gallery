@@ -4,6 +4,7 @@ import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.SortNatural;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -122,7 +123,7 @@ public class Directory implements Comparable<Directory> {
         if (this == obj) return true;
         if (!(obj instanceof Directory)) return false;
         final Directory o = (Directory) obj;
-        return path.equals(o.path);
+        return Objects.equals(path, o.path);
     }
 
     @Override

@@ -71,7 +71,6 @@ public final class AdminController {
                 repo = directoryRepository.findAll();
             }
 
-            // TODO: 2019-05-02 more elegant
             Optional<Directory> rootDir =
                     repo.stream().filter(Directory::isRoot).findFirst();
 
