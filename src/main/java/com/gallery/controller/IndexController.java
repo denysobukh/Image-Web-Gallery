@@ -49,6 +49,7 @@ public final class IndexController {
     @GetMapping(value = "/")
     public String error(Model model) {
         Set<Directory> watched = directoryRepository.findByIsWatched(true);
+        disk.filterFromChildren(watched);
         model.addAttribute("watchedList", watched);
         return "index";
     }

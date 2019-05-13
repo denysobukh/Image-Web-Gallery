@@ -1,7 +1,5 @@
 package com.gallery.configuration;
 
-import com.gallery.model.Disk;
-import com.gallery.model.DiskException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InjectionPoint;
@@ -19,7 +17,7 @@ import java.nio.file.FileSystems;
 @Configuration
 @EnableAspectJAutoProxy
 @EnableWebMvc
-public class ApplicationConfiguration implements WebMvcConfigurer {
+public class Config implements WebMvcConfigurer {
 
     @Value("${gallery.storage.images-directory}")
     private String imagesDirectory;
@@ -27,16 +25,10 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
     @Value("${gallery.storage.thumbnails-directory}")
     private String thumbnailsDirectory;
 
-    @Bean("Logger")
+    @Bean
     @Scope("prototype")
     public Logger logger(InjectionPoint injectionPoint) {
         return LoggerFactory.getLogger(injectionPoint.getMember().getDeclaringClass());
-    }
-
-    @Bean
-    public Disk getDirectoryManager() throws DiskException {
-        return new Disk(imagesDirectory);
-
     }
 
     @Override

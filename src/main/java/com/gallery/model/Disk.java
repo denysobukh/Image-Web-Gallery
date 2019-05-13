@@ -5,6 +5,8 @@ import com.gallery.model.image.ExtensionFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
  *
  * @author Dennis Obukhov
  */
+@Service
 public class Disk {
 
     private final Path rootPath;
@@ -37,7 +40,7 @@ public class Disk {
      * @throws DiskException if the specified path is not a directory
      */
     @Autowired
-    public Disk(String directory) throws DiskException {
+    public Disk(@Value("${gallery.storage.images-directory}") String directory) throws DiskException {
         LoggerFactory.getLogger(this.getClass()).debug("Constructed with path: " + directory);
         rootPath = Paths.get(directory).toAbsolutePath();
         if (!Files.isDirectory(rootPath)) throw new DiskException("Is not a directory", rootPath);
@@ -109,17 +112,52 @@ public class Disk {
         return rootPath;
     }
 
-    public Directory getTreeRoot() throws DiskException {
-        return buildFromRoot();
+
+    /**
+     * Removes directories which are some directory's children from the set
+     *
+     * @param directories to be filtered from the children
+     */
+    public void filterFromChildren(Set<Directory> directories) {
+        Iterator<Directory> iterator = directories.iterator();
+        while (iterator.hasNext()) {
+            Directory d = iterator.next();
+            if (filterChild(directories, d)) {
+                iterator.remove();
+            }
+        }
     }
 
     /**
-     * Builds Directory directories hierarchy
+     * Removes any directory if it has {@code isWatched==false} from the set and from the children;
+     * search for the given directory among the child directories
+     * @param directories set to search through
+     * @param child to search for
+     * @return {@code true} if the {@code child} is found among the {@code directories} or their children
+     */
+    private boolean filterChild(Set<Directory> directories, Directory child) {
+        boolean isChild = false;
+        Iterator<Directory> iterator = directories.iterator();
+        while (iterator.hasNext()) {
+            Directory d = iterator.next();
+            Set<Directory> children = d.getChildren();
+            if (children.contains(child) || filterChild(children, child)) {
+                isChild = true;
+            }
+            if (!d.isWatched()) {
+                iterator.remove();
+            }
+        }
+        return isChild;
+    }
+
+    /**
+     * Builds Directory hierarchy from disk
      *
      * @return root Directory node
      * @throws DiskException if filesystem error occurred
      */
-    private Directory buildFromRoot() throws DiskException {
+    private Directory buildFromDisk() throws DiskException {
         Directory root = this.rootDirectory;
         if (root == null) {
             synchronized (this) {
@@ -168,7 +206,7 @@ public class Disk {
     }
 
     public Set<Directory> getTreeAsList() throws DiskException {
-        buildFromRoot();
+        buildFromDisk();
         return new HashSet<>(directories.values());
     }
 }
