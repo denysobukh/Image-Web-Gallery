@@ -1,10 +1,9 @@
-package com.gallery.model.image;
+package com.gallery.service;
 
 import com.gallery.application.BackgroundExecutor;
-import com.gallery.model.Difference;
+import com.gallery.model.image.Image;
+import com.gallery.model.image.ImageCrudRepository;
 import com.gallery.model.directory.DirectoryRepository;
-import com.gallery.model.Disk;
-import com.gallery.model.DiskException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

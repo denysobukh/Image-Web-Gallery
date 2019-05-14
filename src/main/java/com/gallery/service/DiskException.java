@@ -1,4 +1,4 @@
-package com.gallery.model;
+package com.gallery.service;
 
 import com.gallery.application.ApplicationException;
 
@@ -11,23 +11,23 @@ import java.nio.file.Path;
 public class DiskException extends ApplicationException {
 
     @Deprecated
-    DiskException(Path p) {
+    public DiskException(Path p) {
         super(p.toString());
     }
 
-    DiskException(Exception e) {
+    public DiskException(Exception e) {
         super(e);
     }
 
-    DiskException(String m, Path p) {
+    public DiskException(String m, Path p) {
         super(m + " : " + p);
     }
 
-    DiskException(String m, Path p, Exception e) {
+    public DiskException(String m, Path p, Exception e) {
         super(m + " : " + p, e);
     }
 
-    DiskException(Path p, Exception e) {
+    public DiskException(Path p, Exception e) {
         super(p.toString(), e);
     }
 }

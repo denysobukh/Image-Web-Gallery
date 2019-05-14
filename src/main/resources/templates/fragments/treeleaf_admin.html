@@ -3,14 +3,14 @@
         <li th:each="dir : ${dirsList}">
             <div class="form-check form-check-inline">
                 <input class="form-check-input"
-                       th:checked="${dir.isWatched()}"
+                       th:checked="${dir.isListed()}"
                        type="checkbox"
                        th:attr="data-path=${dir.getPath()}">
                 <a href="javascript:void(0);"
                    th:attr="data-path=${dir.getPath()}"
-                   th:class="${!dir.isWatched()} ? 'font-weight-light text-secondary'"
+                   th:class="${!dir.isListed()} ? 'font-weight-light text-secondary'"
                    th:text="${dir.getName()}"></a>
-                <span th:class="${!dir.isWatched()} ? 'font-weight-light text-secondary'"
+                <span th:class="${!dir.isListed()} ? 'font-weight-light text-secondary'"
                       th:if="${dir.getImagesCount()>0}"
                       th:text="${'(' + dir.getImagesCount() + ')'}"></span>
             </div>

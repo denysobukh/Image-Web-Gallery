@@ -1,9 +1,9 @@
 package com.gallery.controller;
 
-import com.gallery.model.Disk;
 import com.gallery.model.directory.Directory;
 import com.gallery.model.directory.DirectoryRepository;
-import com.gallery.model.image.Previewer;
+import com.gallery.service.Disk;
+import com.gallery.service.Previewer;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
@@ -44,15 +44,23 @@ public final class IndexController {
     public void setPreferences(Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
         model.addAttribute("userName", session.getId());
+
+        Set<Directory> watched = directoryRepository.findByListed(true);
+        // TODO: 2019-05-13 sort order
+        disk.filterChildren(watched);
+        model.addAttribute("watchedList", watched);
     }
 
     @GetMapping(value = "/")
-    public String error(Model model) {
-        Set<Directory> watched = directoryRepository.findByIsWatched(true);
-        disk.filterFromChildren(watched);
-        model.addAttribute("watchedList", watched);
+    public String index(Model model) {
         return "index";
     }
+
+    @GetMapping(value = "/browse/{dirOpt}")
+    public String browse(Model model, @RequestParam Optional<String> dirOpt) {
+        return "index";
+    }
+
 
 
     @GetMapping(value = "/error")
@@ -68,8 +76,8 @@ public final class IndexController {
     }
 
     @GetMapping(value = "/preview")
-    public @ResponseBody
-    void preview(HttpServletResponse response, @RequestParam(name = "image") Optional<String> imageSourceOpt) {
+    @ResponseBody
+    public void preview(HttpServletResponse response, @RequestParam(name = "image") Optional<String> imageSourceOpt) {
         try {
             if (!imageSourceOpt.orElse("").equals("")) {
                 String source = imageSourceOpt.get();

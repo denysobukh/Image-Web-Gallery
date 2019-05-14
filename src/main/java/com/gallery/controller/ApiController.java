@@ -1,7 +1,7 @@
 package com.gallery.controller;
 
 import com.gallery.application.ApplicationException;
-import com.gallery.model.Disk;
+import com.gallery.service.Disk;
 import com.gallery.model.directory.Directory;
 import com.gallery.model.directory.DirectoryRepository;
 import org.slf4j.Logger;
@@ -71,11 +71,11 @@ public final class ApiController {
             Set<Directory> directories = directoryRepository.findByPath(path);
             if (directories.size() == 1) {
                 Directory directory = directories.iterator().next();
-                boolean isWatched = !directory.isWatched();
-                directory.setWatched(isWatched);
+                boolean isListed = !directory.isListed();
+                directory.setListed(isListed);
                 directoryRepository.save(directory);
                 response.put("success", true);
-                response.put("isWatched", isWatched);
+                response.put("isListed", isListed);
             } else {
                 logger.warn("unable to find a directory {}, candidates {}", path, directories.size());
             }

@@ -1,4 +1,4 @@
-package com.gallery.model;
+package com.gallery.service;
 
 import java.util.Collections;
 import java.util.HashSet;

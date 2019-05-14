@@ -1,8 +1,8 @@
 package com.gallery.controller;
 
-import com.gallery.model.Difference;
-import com.gallery.model.Disk;
-import com.gallery.model.DiskException;
+import com.gallery.service.Difference;
+import com.gallery.service.Disk;
+import com.gallery.service.DiskException;
 import com.gallery.model.directory.Directory;
 import com.gallery.model.directory.DirectoryRepository;
 import com.gallery.model.image.ImageCrudRepository;

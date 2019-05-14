@@ -60,11 +60,11 @@ public class Image implements Serializable {
         return modified;
     }
 
-    String getSource() {
+    public String getSource() {
         return source;
     }
 
-    String getThumbnail() {
+    public String getThumbnail() {
         return thumbnail;
     }
 

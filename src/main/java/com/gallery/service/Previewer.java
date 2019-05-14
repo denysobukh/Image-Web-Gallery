@@ -1,4 +1,4 @@
-package com.gallery.model.image;
+package com.gallery.service;
 
 
 import net.coobird.thumbnailator.Thumbnails;

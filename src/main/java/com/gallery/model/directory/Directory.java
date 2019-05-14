@@ -25,24 +25,32 @@ public class Directory implements Comparable<Directory> {
     private String name;
     @NaturalId
     private String path;
+    @NaturalId
+    private String Uri;
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @SortNatural
     private SortedSet<Directory> children = new TreeSet<>();
     private long imagesCount;
-    private boolean isWatched;
+    private boolean listed;
     private boolean isRoot;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
     private Directory parent;
     @Transient
     private int hashCode;
-
     public Directory(String name, String path) {
         this.name = name;
         this.path = path;
     }
-
     public Directory() {
+    }
+
+    public String getUri() {
+        return Uri;
+    }
+
+    public void setUri(String uri) {
+        Uri = uri;
     }
 
     public long getImagesCount() {
@@ -61,12 +69,12 @@ public class Directory implements Comparable<Directory> {
         isRoot = root;
     }
 
-    public boolean isWatched() {
-        return isWatched;
+    public boolean isListed() {
+        return listed;
     }
 
-    public void setWatched(boolean watched) {
-        isWatched = watched;
+    public void setListed(boolean listed) {
+        this.listed = listed;
     }
 
     public long getId() {

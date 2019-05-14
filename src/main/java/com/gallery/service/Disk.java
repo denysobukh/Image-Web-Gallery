@@ -1,4 +1,4 @@
-package com.gallery.model;
+package com.gallery.service;
 
 import com.gallery.model.directory.Directory;
 import com.gallery.model.image.ExtensionFileFilter;
@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
 public class Disk {
 
     private final Path rootPath;
-    private final Map<String, Directory> directories = new HashMap<>();
+
     @Autowired
     private Logger logger;
-    private volatile Directory rootDirectory;
+
 
     /**
      * Constructs Disk with the given path and sets it as the rootDirectory directory
@@ -118,7 +118,7 @@ public class Disk {
      *
      * @param directories to be filtered from the children
      */
-    public void filterFromChildren(Set<Directory> directories) {
+    public void filterChildren(Set<Directory> directories) {
         Iterator<Directory> iterator = directories.iterator();
         while (iterator.hasNext()) {
             Directory d = iterator.next();
@@ -129,7 +129,7 @@ public class Disk {
     }
 
     /**
-     * Removes any directory if it has {@code isWatched==false} from the set and from the children;
+     * Removes any directory if it has {@code isListed==false} from the set and from the children;
      * search for the given directory among the child directories
      * @param directories set to search through
      * @param child to search for
@@ -144,36 +144,16 @@ public class Disk {
             if (children.contains(child) || filterChild(children, child)) {
                 isChild = true;
             }
-            if (!d.isWatched()) {
+            if (!d.isListed()) {
                 iterator.remove();
             }
         }
         return isChild;
     }
 
-    /**
-     * Builds Directory hierarchy from disk
-     *
-     * @return root Directory node
-     * @throws DiskException if filesystem error occurred
-     */
-    private Directory buildFromDisk() throws DiskException {
-        Directory root = this.rootDirectory;
-        if (root == null) {
-            synchronized (this) {
-                root = this.rootDirectory;
-                if (root == null) {
-                    root = addToTree(rootPath);
-                    root.setRoot(true);
-                    this.rootDirectory = root;
-                    for (Path path : readAllDirs()) {
-                        addToTree(path);
-                    }
-                }
-            }
-        }
-        return root;
-    }
+
+    private volatile Directory rootDirectory;
+    private final Map<String, Directory> directories = new HashMap<>();
 
     private Directory addToTree(Path path) {
         String source = path.toString();
@@ -182,6 +162,7 @@ public class Disk {
             String name = path.getFileName().toString();
             directory = new Directory(name, source);
             directory.setImagesCount(getImagesCount(path));
+            directory.setUri(new Path2UriConverter(rootPath.relativize(path)).getUri());
             directories.put(source, directory);
         }
 
@@ -205,8 +186,29 @@ public class Disk {
         return c;
     }
 
+    /**
+     * Builds Directory hierarchy from disk
+     *
+     * @return root Directory node
+     * @throws DiskException if filesystem error occurred
+     */
     public Set<Directory> getTreeAsList() throws DiskException {
-        buildFromDisk();
+        Directory root = this.rootDirectory;
+        if (root == null) {
+            synchronized (this) {
+                root = this.rootDirectory;
+                if (root == null) {
+                    root = addToTree(rootPath);
+                    root.setRoot(true);
+                    this.rootDirectory = root;
+                    for (Path path : readAllDirs()) {
+                        addToTree(path);
+                    }
+                }
+            }
+        }
         return new HashSet<>(directories.values());
     }
+
+
 }

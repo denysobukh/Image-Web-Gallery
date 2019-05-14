@@ -3,7 +3,7 @@
         <li th:each="dir : ${dirsList}">
             <div class="form-check form-check-inline">
                 <a href="javascript:void(0);"
-                   th:href="@{'/?dir?=' + ${dir.getId()}}"
+                   th:href="@{'/browse/' + ${dir.getUri()}}"
                    th:text="${dir.getName()}"></a>
             </div>
             <div th:include="fragments/treeleaf_user :: submenu"

@@ -21,6 +21,7 @@ import java.nio.file.Path;
 
 @Component
 @Scope(value = "prototype")
+// TODO: 2019-05-14
 //@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = WebApplicationContext.SCOPE_SESSION)
 @Entity
 public class UserPreferences {
