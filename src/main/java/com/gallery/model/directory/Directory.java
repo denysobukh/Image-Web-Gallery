@@ -1,48 +1,73 @@
 package com.gallery.model.directory;
 
+import com.gallery.model.image.Image;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.SortNatural;
 
 import javax.persistence.*;
-import java.util.Objects;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
+
+import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.FetchType.LAZY;
 
 /**
  * Directory class represents Directory entity
  *
  * @author Dennis Obukhov
  * @date 2019-04-29 13:02 [Monday]
- * @ThreadSafe
  */
 
 @Entity
 @Table(name = "directories")
 public class Directory implements Comparable<Directory> {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
     private String name;
+
     @NaturalId
     private String path;
+
     @NaturalId
     private String Uri;
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = EAGER)
     @SortNatural
-    private SortedSet<Directory> children = new TreeSet<>();
+    private Set<Directory> children = new TreeSet<>();
+
     private long imagesCount;
+
     private boolean listed;
+
     private boolean isRoot;
-    @ManyToOne(fetch = FetchType.EAGER)
+
+    @ManyToOne(fetch = EAGER)
     @JoinColumn
     private Directory parent;
+
+    @OneToMany(mappedBy = "directory", fetch = LAZY)
+    @SortNatural
+    private Set<Image> images = new TreeSet<>();
+
     @Transient
     private int hashCode;
+
     public Directory(String name, String path) {
         this.name = name;
         this.path = path;
     }
+
+
     public Directory() {
+    }
+
+    public Set<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(SortedSet<Image> images) {
+        this.images = images;
     }
 
     public String getUri() {
@@ -97,7 +122,7 @@ public class Directory implements Comparable<Directory> {
         this.path = path;
     }
 
-    public SortedSet<Directory> getChildren() {
+    public Set<Directory> getChildren() {
         return children;
     }
 

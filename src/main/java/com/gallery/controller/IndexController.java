@@ -56,8 +56,9 @@ public final class IndexController {
         return "index";
     }
 
-    @GetMapping(value = "/browse/{dirOpt}")
-    public String browse(Model model, @RequestParam Optional<String> dirOpt) {
+    @GetMapping(value = "/album/{dirOpt}")
+    public String album(Model model, @RequestParam Optional<String> dirOpt) {
+
         return "index";
     }
 

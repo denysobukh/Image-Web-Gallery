@@ -3,6 +3,7 @@ package com.gallery.service;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Difference class
@@ -22,14 +23,14 @@ public class Difference<T> {
      */
     public Difference(Set<T> current, Set<T> previous) {
         // elements which were removed
-        Set<T> removed = new HashSet<>(previous);
+        Set<T> removed = new TreeSet<>(previous);
         removed.removeAll(current);
-        this.removed = Collections.unmodifiableSet(removed);
+        this.removed = removed;
 
         // root list of new files
-        Set<T> added = new HashSet<>(current);
+        Set<T> added = new TreeSet<>(current);
         added.removeAll(previous);
-        this.added = Collections.unmodifiableSet(added);
+        this.added = added;
     }
 
     public Set<T> getRemoved() {

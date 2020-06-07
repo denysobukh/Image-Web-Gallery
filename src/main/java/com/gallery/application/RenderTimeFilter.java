@@ -22,9 +22,14 @@ import java.io.IOException;
 @Component
 public final class RenderTimeFilter implements Filter {
 
-    @Autowired
+    private final Logger logger;
+
     @Lazy
-    private Logger logger;
+    @Autowired
+    RenderTimeFilter(Logger logger) {
+        this.logger = logger;
+    }
+
 
     @Value("${gallery.log.render-time}")
     private boolean enabled;

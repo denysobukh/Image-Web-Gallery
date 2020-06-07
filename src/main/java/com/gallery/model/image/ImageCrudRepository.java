@@ -1,5 +1,6 @@
 package com.gallery.model.image;
 
+import com.gallery.model.directory.Directory;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

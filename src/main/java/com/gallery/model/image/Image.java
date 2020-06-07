@@ -5,14 +5,13 @@ import com.gallery.model.directory.Directory;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-import javax.xml.bind.DatatypeConverter;
 import java.io.Serializable;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Objects;
+
+import static javax.persistence.FetchType.LAZY;
 
 /**
  * image class represents image directory
@@ -29,15 +28,23 @@ public class Image implements Serializable {
     @Id
     @GeneratedValue
     private long id;
+
     @NaturalId
     private String source;
+
     private String thumbnail;
     /**
      * Last modified time in milliseconds since Epoch
      */
     private long modified;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn
+    private Directory directory;
+
     @Transient
     private int hashcode;
+
 
     protected Image() {
     }
